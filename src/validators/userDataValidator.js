@@ -12,6 +12,8 @@ class UserDataValidator extends BaseValidator {
             this.error({ message: 'Password not provided' });
         }
 
+        // TODO: create user object in db
+
         return {
             email,
             username,

@@ -1,7 +1,7 @@
-const { AppError } = require('../utils/appError');
+const { AppError, logger } = require('../../utils');
 
 const errorHandler = (error, req, res, next) => {
-    console.log(error);
+    logger.error({ message: error.message, stack: error.stack });
     if (error instanceof AppError) {
         res.status(error.status).json({
             message: error.message,

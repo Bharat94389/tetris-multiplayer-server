@@ -1,4 +1,5 @@
 const { MongoClient } = require('mongodb');
+const { logger } = require('./utils');
 
 class Database {
     constructor({ connectionUrl, databaseOptions, databaseName }) {
@@ -10,15 +11,19 @@ class Database {
     async connectAsync() {
         const client = new MongoClient(this.connectionUrl, this.databaseOptions);
         try {
-            console.log('Connecting to client...');
+            logger.info({ message: 'Connecting to client...' });
             await client.connect();
             this.db = client.db(this.databaseName);
-            console.log('Connected to client...');
+            logger.info({ message: 'Connected to client...' });
         } catch (err) {
-            throw err;
-        } finally {
             client.close();
+            logger.info({ message: 'Closing connection to client...' });
+            throw err;
         }
+    }
+
+    insert(collection, doc) {
+        this.db.collection(collection).insertOne(doc);
     }
 }
 
