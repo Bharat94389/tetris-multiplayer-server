@@ -2,46 +2,60 @@ const express = require('express');
 const http = require('http');
 const cors = require('cors');
 
-const Router = require('./router');
+const AppRouter = require('./router');
 const Socket = require('./socket');
-const { errorHandler } = require('./middleware');
+const { errorHandler, authHandler, requestLogger, responseLogger } = require('./middleware');
+const { logger } = require('./utils');
 
 class Server {
-    constructor({ port, database }) {
+    constructor({ port, database, secretKey }) {
         this.port = port;
         this.database = database;
+        this.secretKey = secretKey;
 
         this.app = express();
         this.server = http.createServer(this.app);
-        this.socket = new Socket({ server: this.server, database: this.database });
+        this.socket = new Socket({ server: this.server, database });
         this.setMiddleware();
         this.setRoutes();
-        this.setErrorHandler();
+        this.setPostRequestHandlers();
         this.listen();
     }
 
     setMiddleware() {
         this.app.use(cors());
         this.app.use(express.json());
+
+        this.app.use(requestLogger);
     }
 
     setRoutes() {
         this.app.use(
             '/',
-            new Router({
+            new AppRouter({
                 database: this.database,
-                Router: express.Router,
-            }).getRoutes()
+                secretKey: this.secretKey,
+            }).openRouter
+        );
+
+        this.app.use(
+            '/',
+            authHandler,
+            new AppRouter({
+                database: this.database,
+                secretKey: this.secretKey,
+            }).closedRouter
         );
     }
 
-    setErrorHandler() {
+    setPostRequestHandlers() {
         this.app.use(errorHandler);
+        this.app.use(responseLogger);
     }
 
     listen() {
         this.server.listen(this.port, () => {
-            console.log(`Server running on port: ${this.port}`);
+            logger.info({ message: `Server running on port: ${this.port}` });
         });
     }
 }

@@ -1,18 +1,18 @@
-class AuthenticationRouter {
-    constructor({ Router, authenticationController, tryCatch }) {
-        this.Router = Router;
+const BaseRouter = require('./baseRouter');
+
+class AuthenticationRouter extends BaseRouter {
+    constructor({ authenticationController }) {
+        super();
+
         this.authenticationController = authenticationController;
-        this.tryCatch = tryCatch;
+
+        this.getRoutes();
     }
 
     getRoutes() {
-        const router = this.Router();
-
-        router.post('/login', this.tryCatch(this.login.bind(this)));
-        router.post('/signup', this.tryCatch(this.signup.bind(this)));
-        router.get('/verify', this.tryCatch(this.verify.bind(this)));
-
-        return router;
+        this.openRouter.post('/login', this.tryCatch(this.login.bind(this)));
+        this.openRouter.post('/signup', this.tryCatch(this.signup.bind(this)));
+        this.closedRouter.get('/verify/:token', this.tryCatch(this.verify.bind(this)));
     }
 
     async login(req, res) {
@@ -32,7 +32,7 @@ class AuthenticationRouter {
     }
 
     async verify(req, res) {
-        const { token } = req.body;
+        const { token } = req.params;
         const result = await this.authenticationController.verify({ token });
         res.json(result);
     }

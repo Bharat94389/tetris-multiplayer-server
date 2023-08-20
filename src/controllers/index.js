@@ -2,10 +2,10 @@ const AuthenticationController = require('./authenticationController');
 const Validator = require('../validators');
 
 class Controller {
-    constructor({ database }) {
+    constructor({ database, secretKey }) {
         this.database = database;
 
-        this.validator = new Validator({ database });
+        this.validator = new Validator({ database, secretKey });
     }
 
     get authenticationController() {

@@ -3,7 +3,7 @@ const TokenValidator = require('./tokenValidator');
 const UserDataValidator = require('./userDataValidator');
 
 class Validator {
-    constructor({ database }) {
+    constructor({ database, secretKey }) {
         this.database = database;
     }
 

@@ -5,16 +5,12 @@ class BaseValidator {
         this.database = database;
     }
 
-    error({ message, status, args }) {
-        throw new AppError({
-            message,
-            args,
-            status,
-        });
+    error({ message, status = 400, args }) {
+        throw new AppError({ message, args, status });
     }
 
     validate(args) {
-        return args;
+        throw Error('To be implemented');
     }
 }
 
