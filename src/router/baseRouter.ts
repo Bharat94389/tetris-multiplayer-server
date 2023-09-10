@@ -1,13 +1,14 @@
-const { Router } = require('express');
+import { Router, Request, Response, NextFunction } from 'express';
 
 class BaseRouter {
+    router: Router;
+
     constructor() {
-        this.openRouter = new Router();
-        this.closedRouter = new Router();
+        this.router = Router();
     }
 
-    tryCatch(callback) {
-        return async (req, res, next) => {
+    tryCatch(callback: any) {
+        return async (req: Request, res: Response, next: NextFunction) => {
             try {
                 await callback(req, res);
                 next();
@@ -17,9 +18,9 @@ class BaseRouter {
         };
     }
 
-    getRoutes() {
+    setRoutes() {
         throw Error('To be implemented');
     }
 }
 
-module.exports = BaseRouter;
+export default BaseRouter;

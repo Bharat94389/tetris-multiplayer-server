@@ -2,6 +2,8 @@ const { createLogger, format, transports } = require('winston');
 const { combine, timestamp, json } = format;
 
 class Logger {
+    logger: any;
+
     constructor() {
         this.logger = createLogger({
             format: combine(timestamp(), json({ space: 0 })),
@@ -9,13 +11,17 @@ class Logger {
         });
     }
 
-    info({ message, args }) {
-        this.logger.info(message, args);
+    info(message: string, args: Object | undefined = undefined) {
+        if (args) {
+            this.logger.info(message, args);
+        } else {
+            this.logger.info(message);
+        }
     }
 
-    error({ message, stack }) {
+    error(message: string, stack: any) {
         this.logger.error(message, { stack });
     }
 }
 
-module.exports = { Logger };
+export default new Logger();

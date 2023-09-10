@@ -1,7 +1,8 @@
-const { AppError, logger } = require('../../utils');
+import { Request, Response, NextFunction } from 'express';
+import { AppError, logger } from '../../utils';
 
-const errorHandler = (error, req, res, next) => {
-    logger.error({ message: error.message, stack: error.stack });
+const errorHandler = (error: Error | AppError, req: Request, res: Response, next: NextFunction) => {
+    logger.error(error.message, error.stack);
     if (error instanceof AppError) {
         res.status(error.status).json({
             message: error.message,
@@ -14,4 +15,4 @@ const errorHandler = (error, req, res, next) => {
     next();
 };
 
-module.exports = errorHandler;
+export default errorHandler;

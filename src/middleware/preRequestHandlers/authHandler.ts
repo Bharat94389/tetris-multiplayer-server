@@ -1,6 +1,7 @@
+import { Response, NextFunction } from 'express';
 const { jwt, logger } = require('../../utils');
 
-const authHandler = (req, res, next) => {
+const authHandler = (req: any, res: Response, next: NextFunction) => {
     if (req.headers.authorization) {
         const [authType, token] = req.headers.authorization.split(' ');
 
@@ -18,10 +19,10 @@ const authHandler = (req, res, next) => {
         args: {
             statusCode: res.statusCode,
             statusMessage: res.statusMessage,
-            url: res.url,
-            method: res.method,
+            url: req.url,
+            method: req.method,
         },
     });
 };
 
-module.exports = authHandler;
+export default authHandler;
