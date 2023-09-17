@@ -1,5 +1,5 @@
 export default {
-    SECRET_KEY: process.env.SECRET_KEY,
+    SECRET_KEY: String(process.env.SECRET_KEY),
     GAME_CONSTANTS: {
         GAME_OVER: 'game_over',
         PIECES: {

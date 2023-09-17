@@ -5,7 +5,7 @@ class CredentialsValidator extends BaseValidator {
     validate({ username, password }: { username: string; password: string }) {
         // TODO: Add logic to verify user from database
 
-        const token: string = jwt.generate({ username, password });
+        const token: string|null = jwt.generate({ username, password });
         return { token };
     }
 }

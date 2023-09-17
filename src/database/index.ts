@@ -1,11 +1,11 @@
-import { MongoClient } from 'mongodb';
+import { MongoClient, Db } from 'mongodb';
 import { logger } from '../utils';
 
 class Database {
     connectionUrl: string;
     dbName: string;
     options: Object;
-    db: any;
+    db: Db|null;
 
     constructor({
         connectionUrl,
@@ -19,6 +19,7 @@ class Database {
         this.connectionUrl = connectionUrl;
         this.dbName = dbName;
         this.options = options;
+        this.db = null;
     }
 
     async connectAsync() {

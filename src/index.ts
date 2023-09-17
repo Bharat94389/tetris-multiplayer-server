@@ -8,7 +8,7 @@ import Server from './server';
 
 const main = async () => {
     const database: Database = new Database({
-        connectionUrl: String(process.env.CONNECTION_URL),
+        connectionUrl: databaseConfig.connectionUrl,
         options: databaseConfig.options,
         dbName: databaseConfig.dbName,
     });
@@ -20,7 +20,7 @@ const main = async () => {
             port: Number(process.env.PORT) || 3000,
             database,
         });
-    } catch (err) {
+    } catch (err: any) {
         logger.error(err.message, err.stack);
     }
 };

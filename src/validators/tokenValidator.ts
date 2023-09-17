@@ -3,7 +3,7 @@ import BaseValidator from './baseValidator';
 
 class TokenValidator extends BaseValidator {
     validate({ token }: { token: string }) {
-        const userData: Object = jwt.verify(token);
+        const userData: Object|null = jwt.verify(token);
 
         // TODO: Validate user found in userData
 

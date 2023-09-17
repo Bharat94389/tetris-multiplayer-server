@@ -1,19 +1,20 @@
 import jwt from 'jsonwebtoken';
-import SECRET_KEY from '../constants';
+import constants from '../constants';
 
 class JWT {
     generate(user: Object) {
         if (user) {
-            return jwt.sign(user, SECRET_KEY);
+            return jwt.sign(user, constants.SECRET_KEY);
         }
         return null;
     }
 
     verify(token: string) {
-        if (!token) {
+        try {
+            return jwt.verify(token, constants.SECRET_KEY);
+        } finally {
             return null;
         }
-        return jwt.verify(token, SECRET_KEY, (err: Error, data: Object) => (err ? null : data));
     }
 }
 
