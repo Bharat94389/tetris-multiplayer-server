@@ -1,7 +1,7 @@
-import { Response, NextFunction } from 'express';
 const { jwt, logger } = require('../../utils');
+import { Request, Response, NextFunction } from '../../types';
 
-const authHandler = (req: any, res: Response, next: NextFunction) => {
+const authHandler = (req: Request, res: Response, next: NextFunction) => {
     if (req.headers.authorization) {
         const [authType, token] = req.headers.authorization.split(' ');
 

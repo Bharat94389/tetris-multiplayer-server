@@ -1,12 +1,12 @@
-const { createLogger, format, transports } = require('winston');
-const { combine, timestamp, json } = format;
+import { createLogger, format, transports } from 'winston';
+import { WinstonLogger } from '../types';
 
 class Logger {
-    logger: any;
+    logger: WinstonLogger;
 
     constructor() {
         this.logger = createLogger({
-            format: combine(timestamp(), json({ space: 0 })),
+            format: format.combine(format.timestamp(), format.json({ space: 0 })),
             transports: [new transports.Console()],
         });
     }

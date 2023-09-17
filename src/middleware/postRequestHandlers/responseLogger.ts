@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction } from '../../types';
 import { logger } from '../../utils';
 
 const responseLogger = (req: Request, res: Response, next: NextFunction) => {

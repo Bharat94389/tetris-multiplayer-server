@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+  express:
+    depends_on:
+      - mongo
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - CONNECTION_URL=mongodb://mongo:27017
+      - SECRET_KEY=CAN_CHANGE_TO_ANYTHING
+      - PORT=3000
+      - ENV=dev
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./src:/app/src
+      - ./package.json:/app/package.json
+    command:
+      npm run dev
+
+  mongo:
+    image: mongo:5.0.18
+    ports:
+      - '27017:27017'
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
