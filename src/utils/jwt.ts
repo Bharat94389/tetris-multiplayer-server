@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import constants from '../constants';
 
 class JWT {
-    generate(user: Object) {
+    generate(user: { username: string, password: string}) {
         if (user) {
             return jwt.sign(user, constants.SECRET_KEY);
         }

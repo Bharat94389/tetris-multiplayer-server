@@ -5,3 +5,9 @@ up:
 down:
 	docker compose -p fhir-dev -f docker-compose.yml down && \
 	docker system prune -f
+
+restart:
+	make down && make up
+
+logs:
+	docker logs --follow tetris-express-1

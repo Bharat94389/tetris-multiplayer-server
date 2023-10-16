@@ -10,4 +10,4 @@ COPY ./package.json /app/package.json
 # Update npm
 RUN npm install -g npm@latest && npm install
 
-CMD ["tail", "-f", "/dev/null"]
+CMD ["npm", "start"]
