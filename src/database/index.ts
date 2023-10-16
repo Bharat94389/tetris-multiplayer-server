@@ -1,11 +1,12 @@
 import { MongoClient, Db } from 'mongodb';
 import { logger } from '../utils';
+import { databaseConfig } from './../config';
 
 class Database {
     connectionUrl: string;
     dbName: string;
     options: Object;
-    db: Db|null;
+    db: Db | null;
 
     constructor({
         connectionUrl,
@@ -15,7 +16,7 @@ class Database {
         connectionUrl: string;
         options: Object;
         dbName: string;
-    }) {
+        }) {
         this.connectionUrl = connectionUrl;
         this.dbName = dbName;
         this.options = options;
@@ -23,7 +24,7 @@ class Database {
     }
 
     async connectAsync() {
-        const client = new MongoClient(this.connectionUrl, this.options);
+        const client: MongoClient = new MongoClient(this.connectionUrl, this.options);
         try {
             logger.info('Connecting to client...');
             await client.connect();
@@ -37,4 +38,10 @@ class Database {
     }
 }
 
-export default Database;
+export default new Database({
+    connectionUrl: databaseConfig.connectionUrl,
+    options: databaseConfig.options,
+    dbName: databaseConfig.dbName,
+});
+
+export { Database };

@@ -1,12 +1,12 @@
 import { Request, Response } from 'express';
 import BaseRouter from './baseRouter';
 import { AuthenticationController } from '../controllers';
-import {Database} from '../types';
+import { Database } from '../types';
 
 class AuthenticationRouter extends BaseRouter {
     authenticationController: AuthenticationController;
 
-    constructor({ database }: {database: Database}) {
+    constructor({ database }: { database: Database }) {
         super();
 
         this.authenticationController = new AuthenticationController({ database });

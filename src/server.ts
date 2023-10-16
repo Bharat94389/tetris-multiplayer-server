@@ -38,7 +38,7 @@ class Server {
     }
 
     setRoutes() {
-        this.app.use('/', new AuthenticationRouter({ database: this.database }).router);
+        this.app.use('/auth', new AuthenticationRouter({ database: this.database }).router);
         this.app.use('/', authHandler);
     }
 
