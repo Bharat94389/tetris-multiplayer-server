@@ -1,13 +1,15 @@
 import { Server } from 'socket.io';
 import { logger } from '../utils';
-import { Database, HttpServer, IoSocket } from '../types';
+import { HttpServer, IoSocket } from '../types';
+
+interface ConstructorParams {
+    httpServer: HttpServer;
+}
 
 class Socket {
-    database: Database;
     io: Server;
 
-    constructor({ httpServer, database }: { httpServer: HttpServer; database: Database }) {
-        this.database = database;
+    constructor({ httpServer }: ConstructorParams) {
         this.io = new Server(httpServer, {
             cors: {
                 methods: ['GET', 'POST'],
@@ -17,12 +19,11 @@ class Socket {
         this.io.on('connect', this.setupSocket);
     }
 
-    setupSocket(socket: IoSocket) {
+    setupSocket(socket: IoSocket): void {
         logger.info(`User connected: ${socket.id}`);
 
         socket.on('game', (data: any) => {
             console.log(data);
-            socket.emit('send_message', 'changed');
         });
 
         socket.on('disconnect', () => {

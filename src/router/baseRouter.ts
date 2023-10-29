@@ -7,18 +7,17 @@ class BaseRouter {
         this.router = Router();
     }
 
-    tryCatch(callback: any) {
+    tryCatch(callback: any): (req: Request, res: Response, next: NextFunction) => Promise<void> {
         return async (req: Request, res: Response, next: NextFunction) => {
             try {
                 await callback(req, res);
-                next();
             } catch (error) {
                 next(error);
             }
         };
     }
 
-    setRoutes() {
+    setRoutes(): void {
         throw Error('To be implemented');
     }
 }

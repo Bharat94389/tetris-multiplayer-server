@@ -1,18 +1,35 @@
 import jwt from 'jsonwebtoken';
 import constants from '../constants';
+import { User } from '../database';
+
+interface GenerateParams {
+    username: string;
+    password: string;
+    email: string;
+}
+
+interface Payload {
+    username: string;
+    email: string;
+}
 
 class JWT {
-    generate(user: { username: string, password: string}) {
+    async generate({ username, email, password }: GenerateParams): Promise<string | null> {
+        const user = await new User({}).get({ username, password });
         if (user) {
-            return jwt.sign(user, constants.SECRET_KEY);
+            return jwt.sign({ username, email }, constants.SECRET_KEY);
         }
         return null;
     }
 
-    verify(token: string) {
+    verify(token: string): null | Payload {
         try {
-            return jwt.verify(token, constants.SECRET_KEY);
-        } finally {
+            const payload = jwt.verify(token, constants.SECRET_KEY);
+            if (typeof payload === 'string') {
+                return null;
+            }
+            return { username: payload.username, email: payload.email };
+        } catch {
             return null;
         }
     }

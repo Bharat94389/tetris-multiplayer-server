@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from '../../types';
 import { logger } from '../../utils';
 
-const responseLogger = (req: Request, res: Response, next: NextFunction) => {
+const responseLogger = (req: Request, res: Response, next: NextFunction): void => {
     logger.info('Request Completed', {
         statusCode: res.statusCode,
         statusMessage: res.statusMessage,

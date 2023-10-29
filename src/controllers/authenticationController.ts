@@ -1,42 +1,46 @@
-import { CredentialsValidator, TokenValidator, UserDataValidator } from '../validators';
-import { Database } from '../types';
+import { User } from '../database';
+import { AppError, jwt } from '../utils';
+
+interface LoginParams {
+    username: string;
+    password: string;
+}
+
+interface VerifyParams {
+    token: string;
+}
+
+interface SignupParams {
+    email: string;
+    username: string;
+    password: string;
+}
 
 class AuthenticationController {
-    userDataValidator: UserDataValidator;
-    tokenValidator: TokenValidator;
-    credentialsValidator: CredentialsValidator;
-
-    constructor({ database }: { database: Database }) {
-        this.userDataValidator = new UserDataValidator({ database });
-        this.tokenValidator = new TokenValidator({ database });
-        this.credentialsValidator = new CredentialsValidator({ database });
+    async login({ username, password }: LoginParams): Promise<any> {
+        const userData = await new User({}).get({ username, password });
+        const token = await jwt.generate(userData);
+        return { userData, token };
     }
 
-    async login({ username, password }: { username: string; password: string }) {
-        const validatedData = await this.credentialsValidator.validate({ username, password });
-        return validatedData;
+    async verify({ token }: VerifyParams): Promise<any> {
+        const data = jwt.verify(token);
+        if (data) {
+            await new User({}).update(data.email, { isVerified: true });
+            return { verified: true };
+        } else {
+            throw new AppError({ message: 'Invalid token', status: 401 });
+        }
     }
 
-    async verify({ token }: { token: string }) {
-        const validatedUserDetails = await this.tokenValidator.validate({ token });
-        return validatedUserDetails;
-    }
+    async signup(userData: SignupParams): Promise<any> {
+        const validatedUser = new User({ data: userData });
 
-    async signup({
-        email,
-        username,
-        password,
-    }: {
-        email: string;
-        username: string;
-        password: string;
-    }) {
-        const validatedData = await this.userDataValidator.validate({
-            email,
-            username,
-            password,
-        });
-        return validatedData;
+        const created: boolean = await validatedUser.create();
+        if (!validatedUser.data) {
+            throw new AppError({ message: 'Invalid user data' });
+        }
+        return { created };
     }
 }
 

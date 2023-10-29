@@ -1,7 +1,7 @@
 import { logger } from '../../utils';
 import { Request, Response, NextFunction } from '../../types';
 
-const requestLogger = (req: Request, res: Response, next: NextFunction) => {
+const requestLogger = (req: Request, res: Response, next: NextFunction): void => {
     logger.info('Incoming Request', {
         body: req.body,
         params: req.params,
