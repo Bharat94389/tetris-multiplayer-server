@@ -1,9 +1,15 @@
+interface ConstructorParams {
+    message: string;
+    status?: number;
+    args?: Object;
+}
+
 class AppError extends Error {
     message: string;
     status: number;
-    args: Object|undefined;
+    args: Object | undefined;
 
-    constructor({ message, status, args }: { message: string; status: number; args?: Object }) {
+    constructor({ message, status = 500, args }: ConstructorParams) {
         super();
 
         this.message = message;

@@ -12,4 +12,9 @@ export default {
             I: 'i',
         },
     },
+    COLLECTIONS: {
+        USER: 'Users',
+        GAME: 'Games',
+        LEADER_BOARD: 'LeaderBoards',
+    },
 };

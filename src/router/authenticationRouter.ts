@@ -1,34 +1,33 @@
 import { Request, Response } from 'express';
 import BaseRouter from './baseRouter';
 import { AuthenticationController } from '../controllers';
-import { Database } from '../types';
+import { UserSchema } from '../database/schema';
 
 class AuthenticationRouter extends BaseRouter {
     authenticationController: AuthenticationController;
 
-    constructor({ database }: { database: Database }) {
+    constructor() {
         super();
 
-        this.authenticationController = new AuthenticationController({ database });
+        this.authenticationController = new AuthenticationController();
 
         this.setRoutes();
     }
 
-    setRoutes() {
+    setRoutes(): void {
         this.router.post('/login', this.tryCatch(this.login.bind(this)));
         this.router.post('/signup', this.tryCatch(this.signup.bind(this)));
         this.router.get('/verify/:token', this.tryCatch(this.verify.bind(this)));
     }
 
-    async login(req: Request, res: Response) {
+    async login(req: Request, res: Response): Promise<void> {
         const { username, password }: { username: string; password: string } = req.body;
         const result = await this.authenticationController.login({ username, password });
         res.json(result);
     }
 
-    async signup(req: Request, res: Response) {
-        const { email, username, password }: { email: string; username: string; password: string } =
-            req.body;
+    async signup(req: Request, res: Response): Promise<void> {
+        const { email, username, password }: UserSchema = req.body;
         const result = await this.authenticationController.signup({
             email,
             username,
@@ -37,7 +36,7 @@ class AuthenticationRouter extends BaseRouter {
         res.json(result);
     }
 
-    async verify(req: Request, res: Response) {
+    async verify(req: Request, res: Response): Promise<void> {
         const { token }: { token?: string } = req.params;
         const result = await this.authenticationController.verify({ token });
         res.json(result);

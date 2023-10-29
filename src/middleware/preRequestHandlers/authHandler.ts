@@ -1,15 +1,13 @@
 import { jwt, logger } from '../../utils';
 import { Request, Response, NextFunction } from '../../types';
-import database from '../../database';
 
-const authHandler = async (req: Request, res: Response, next: NextFunction) => {
+const authHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     if (req.headers.authorization) {
         const [authType, token] = req.headers.authorization.split(' ');
 
         if (authType === 'Bearer' && token) {
             const userData = jwt.verify(token);
             if (userData) {
-
                 req.user = userData;
                 return next();
             }

@@ -11,7 +11,7 @@ class Logger {
         });
     }
 
-    info(message: string, args: Object | undefined = undefined) {
+    info(message: string, args: Object | undefined = undefined): void {
         if (args) {
             this.logger.info(message, args);
         } else {
@@ -19,7 +19,7 @@ class Logger {
         }
     }
 
-    error(message: string, stack: any) {
+    error(message: string, stack: any): void {
         this.logger.error(message, { stack });
     }
 }

@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from '../../types';
 import { AppError, logger } from '../../utils';
 
-const errorHandler = (error: Error | AppError, req: Request, res: Response, next: NextFunction) => {
+const errorHandler = (error: Error | AppError, req: Request, res: Response, next: NextFunction): void => {
     logger.error(error.message, error.stack);
     if (error instanceof AppError) {
         res.status(error.status).json({

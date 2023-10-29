@@ -11,7 +11,6 @@ const main = async () => {
 
         new Server({
             port: Number(process.env.PORT) || 3000,
-            database,
         });
     } catch (err: any) {
         logger.error(err.message, err.stack);
