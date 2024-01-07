@@ -10,7 +10,7 @@ const main = async () => {
         await database.connectAsync();
 
         new Server({
-            port: Number(process.env.PORT) || 3000,
+            port: Number(process.env.PORT) || 5000,
         });
     } catch (err: any) {
         logger.error(err.message, err.stack);

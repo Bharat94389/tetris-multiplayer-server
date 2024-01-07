@@ -1,4 +1,4 @@
-FROM node:20.5.1 as express_build
+FROM node:20.10.0 as express_build
 
 ARG NODE_ENV=production
 

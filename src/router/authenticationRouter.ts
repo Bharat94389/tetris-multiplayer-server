@@ -21,16 +21,15 @@ class AuthenticationRouter extends BaseRouter {
     }
 
     async login(req: Request, res: Response): Promise<void> {
-        const { username, password }: { username: string; password: string } = req.body;
-        const result = await this.authenticationController.login({ username, password });
+        const { email, password }: { email: string; password: string } = req.body;
+        const result = await this.authenticationController.login({ email, password });
         res.json(result);
     }
 
     async signup(req: Request, res: Response): Promise<void> {
-        const { email, username, password }: UserSchema = req.body;
+        const { email, password }: UserSchema = req.body;
         const result = await this.authenticationController.signup({
             email,
-            username,
             password,
         });
         res.json(result);
