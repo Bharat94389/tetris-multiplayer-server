@@ -1,7 +1,7 @@
-import authHandler from './preRequestHandlers/authHandler';
-import requestLogger from './preRequestHandlers/requestLogger';
-import errorHandler from './postRequestHandlers/errorHandler';
-import responseLogger from './postRequestHandlers/responseLogger';
+import authHandler from './authHandler';
+import requestLogger from './requestLogger';
+import errorHandler from './errorHandler';
+import responseLogger from './responseLogger';
 
 export {
     authHandler,

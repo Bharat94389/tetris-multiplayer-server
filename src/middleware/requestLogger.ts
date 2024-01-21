@@ -1,5 +1,5 @@
-import { logger } from '../../utils';
-import { Request, Response, NextFunction } from '../../types';
+import { logger } from '../utils';
+import { Request, Response, NextFunction } from '../server';
 
 const requestLogger = (req: Request, res: Response, next: NextFunction): void => {
     logger.info('Incoming Request', {

@@ -15,6 +15,10 @@ export default {
     COLLECTIONS: {
         USER: 'Users',
         GAME: 'Games',
-        LEADER_BOARD: 'LeaderBoards',
     },
+    SOCKET_EVENTS: {
+        START_GAME: 'START_GAME',
+        NEXT_PIECE: 'NEXT_PIECE',
+        GAME_OVER: 'GAME_OVER'
+    }
 };

@@ -1,5 +1,5 @@
-import { Request, Response, NextFunction } from '../../types';
-import { AppError, logger } from '../../utils';
+import { Request, Response, NextFunction } from '../server';
+import { AppError, logger } from '../utils';
 
 const errorHandler = (error: Error | AppError, req: Request, res: Response, next: NextFunction): void => {
     logger.error(error.message, error.stack);
