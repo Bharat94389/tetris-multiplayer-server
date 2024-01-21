@@ -1,5 +1,5 @@
-import { jwt, logger } from '../../utils';
-import { Request, Response, NextFunction } from '../../types';
+import { jwt, logger } from '../utils';
+import { Request, Response, NextFunction } from '../server';
 
 const authHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     if (req.headers.authorization) {

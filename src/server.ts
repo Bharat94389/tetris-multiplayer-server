@@ -1,12 +1,16 @@
-import express from 'express';
+import express, { Request as ExpressRequest, Response, NextFunction, Express } from 'express';
 import http from 'http';
 import cors from 'cors';
+import { Server as HttpServer } from 'http';
 
 import Socket from './socket';
 import { errorHandler, authHandler, requestLogger, responseLogger } from './middleware';
 import { logger } from './utils';
 import { AuthenticationRouter } from './router';
-import { HttpServer, Express } from './types';
+
+interface Request extends ExpressRequest {
+    user?: any;
+}
 
 class Server {
     port: number;
@@ -33,6 +37,7 @@ class Server {
         this.app.use(express.json());
 
         this.app.use(requestLogger);
+        this.app.use(responseLogger);
     }
 
     setRoutes() {
@@ -42,7 +47,6 @@ class Server {
 
     setPostRequestHandlers() {
         this.app.use(errorHandler);
-        this.app.use(responseLogger);
     }
 
     listen() {
@@ -53,3 +57,5 @@ class Server {
 }
 
 export default Server;
+
+export { HttpServer, Request, Response, NextFunction, Express };

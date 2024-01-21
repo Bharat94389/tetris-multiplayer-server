@@ -1,5 +1,4 @@
-import { createLogger, format, transports } from 'winston';
-import { WinstonLogger } from '../types';
+import { createLogger, format, transports, Logger as WinstonLogger } from 'winston';
 
 class Logger {
     logger: WinstonLogger;
