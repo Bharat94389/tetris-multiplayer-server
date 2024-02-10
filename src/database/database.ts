@@ -1,9 +1,9 @@
-import { MongoClient, Db } from 'mongodb';
-import { logger } from '../utils';
+import { MongoClient, Db, Collection, Document } from 'mongodb';
+import { AppError, logger } from '../utils';
+import { databaseConfig } from './../config';
 
 class Database {
     connectionUrl: string;
-    collections: string[];
     dbName: string;
     options: Object;
     db: Db | null;
@@ -21,7 +21,6 @@ class Database {
         this.dbName = dbName;
         this.options = options;
         this.db = null;
-        this.collections = [];
     }
 
     async connectAsync(): Promise<void> {
@@ -37,7 +36,20 @@ class Database {
             throw err;
         }
     }
+
+    getCollection<T extends Document>(collectionName: string): Collection<T> {
+        if (this.db) {
+            return this.db.collection(collectionName);
+        } else {
+            throw new AppError({ message: 'Initialize the database before accessing db' });
+        }
+    }
 }
 
-export default Database;
+export default new Database({
+    connectionUrl: databaseConfig.connectionUrl,
+    options: databaseConfig.options,
+    dbName: databaseConfig.dbName,
+});
 
+export { Database };

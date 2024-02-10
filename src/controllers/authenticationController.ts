@@ -1,4 +1,5 @@
 import { User } from '../database';
+import { UserSchema } from '../database/schema';
 import { AppError, jwt } from '../utils';
 
 interface LoginParams {
@@ -17,28 +18,22 @@ interface SignupParams {
 
 class AuthenticationController {
     async login({ email, password }: LoginParams): Promise<any> {
-        const userData = await new User({}).get({ email, password });
+        const userData: UserSchema | null = await User.findOne({ email });
         if (!userData) {
             throw new AppError({ message: 'Unauthorized', status: 401 });
         }
-        const token = await jwt.generate(userData);
+        const user = new User(userData);
+        if (!user.validatePassword(password)) {
+            throw new AppError({ message: 'Unauthorized', status: 401 });
+        }
+        const token = await jwt.generate({ email });
         return { token };
     }
 
-    async verify({ token }: VerifyParams): Promise<any> {
-        const data = jwt.verify(token);
-        if (data) {
-            await new User({}).update(data.email, { isVerified: true });
-            return { verified: true };
-        } else {
-            throw new AppError({ message: 'Invalid token', status: 401 });
-        }
-    }
-
     async signup(userData: SignupParams): Promise<void> {
-        const validatedUser = new User({ data: userData });
+        const user = new User(userData);
 
-        if (!await validatedUser.create()) {
+        if (!(await user.create())) {
             throw new AppError({ message: 'Invalid user data', status: 400 });
         }
     }

@@ -17,7 +17,6 @@ class AuthenticationRouter extends BaseRouter {
     setRoutes(): void {
         this.router.post('/login', this.tryCatch(this.login.bind(this)));
         this.router.post('/signup', this.tryCatch(this.signup.bind(this)));
-        this.router.get('/verify/:token', this.tryCatch(this.verify.bind(this)));
     }
 
     async login(req: Request, res: Response): Promise<void> {
@@ -32,12 +31,6 @@ class AuthenticationRouter extends BaseRouter {
             email,
             password,
         });
-        res.json(result);
-    }
-
-    async verify(req: Request, res: Response): Promise<void> {
-        const { token }: { token?: string } = req.params;
-        const result = await this.authenticationController.verify({ token });
         res.json(result);
     }
 }
