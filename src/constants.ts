@@ -1,5 +1,5 @@
 export const GAME_CONSTANTS = {
-    GAME_OVER: 'game_over',
+    GAME_OVER: 'GAME_OVER',
     PIECES: {
         L: 'l',
         S: 's',
@@ -11,9 +11,16 @@ export const GAME_CONSTANTS = {
     },
 };
 
+export const GAME_STATUS = {
+    IN_PROGRESS: 'IN_PROGRESS',
+    COMPLETED: 'COMPLETED',
+    WAITING: 'WAITING',
+};
+
 export const COLLECTIONS = {
     USER: 'Users',
     GAME: 'Games',
+    PLAYER_STATS: 'PlayerStats',
 };
 
 export const SOCKET_EVENTS = {

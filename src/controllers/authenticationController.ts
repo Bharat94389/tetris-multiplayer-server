@@ -1,5 +1,4 @@
 import { User } from '../database';
-import { UserSchema } from '../database/schema';
 import { AppError, jwt } from '../utils';
 
 interface LoginParams {
@@ -7,23 +6,15 @@ interface LoginParams {
     password: string;
 }
 
-interface VerifyParams {
-    token: string;
-}
-
 interface SignupParams {
+    username: string;
     email: string;
     password: string;
 }
 
 class AuthenticationController {
-    async login({ email, password }: LoginParams): Promise<any> {
-        const userData: UserSchema | null = await User.findOne({ email });
-        if (!userData) {
-            throw new AppError({ message: 'Unauthorized', status: 401 });
-        }
-        const user = new User(userData);
-        if (!user.validatePassword(password)) {
+    async login({ email, password }: LoginParams): Promise<{ token: string | null }> {
+        if (!new User({ email, password }).authenticate()) {
             throw new AppError({ message: 'Unauthorized', status: 401 });
         }
         const token = await jwt.generate({ email });
@@ -31,11 +22,7 @@ class AuthenticationController {
     }
 
     async signup(userData: SignupParams): Promise<void> {
-        const user = new User(userData);
-
-        if (!(await user.create())) {
-            throw new AppError({ message: 'Invalid user data', status: 400 });
-        }
+        await new User(userData).create();
     }
 }
 

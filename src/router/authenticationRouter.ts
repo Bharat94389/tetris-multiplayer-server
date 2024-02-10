@@ -26,8 +26,9 @@ class AuthenticationRouter extends BaseRouter {
     }
 
     async signup(req: Request, res: Response): Promise<void> {
-        const { email, password }: UserSchema = req.body;
+        const { username, email, password }: UserSchema = req.body;
         const result = await this.authenticationController.signup({
+            username,
             email,
             password,
         });
