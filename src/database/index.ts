@@ -1,12 +1,6 @@
-import Database from './database';
-import { databaseConfig } from './../config';
+import database from './database';
 
-import { User } from './models';
+export default database;
 
-export default new Database({
-    connectionUrl: databaseConfig.connectionUrl,
-    options: databaseConfig.options,
-    dbName: databaseConfig.dbName,
-});
-
-export { Database, User };
+export { Database } from './database';
+export { User } from './models';
