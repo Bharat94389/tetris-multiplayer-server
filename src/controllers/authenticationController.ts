@@ -14,10 +14,14 @@ interface SignupParams {
 
 class AuthenticationController {
     async login({ email, password }: LoginParams): Promise<{ token: string | null }> {
-        if (!new User({ email, password }).authenticate()) {
+        const user = new User({ email, password });
+        if (!(await user.authenticate())) {
             throw new AppError({ message: 'Unauthorized', status: 401 });
         }
-        const token = await jwt.generate({ email });
+        const token = await jwt.generate({
+            email: user.data?.email || '',
+            username: user.data?.username || '',
+        });
         return { token };
     }
 
@@ -26,4 +30,4 @@ class AuthenticationController {
     }
 }
 
-export default AuthenticationController;
+export { AuthenticationController };

@@ -15,7 +15,7 @@ class BaseModel {
         throw new AppError({ message: 'FindOne is not implemented' });
     }
 
-    async create() {
+    async create(): Promise<any> {
         throw new AppError({ message: 'Create is not implemented' });
     }
 

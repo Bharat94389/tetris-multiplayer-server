@@ -15,9 +15,10 @@ class User extends BaseModel {
         }
         const userCollection = database.getCollection<UserSchema>(COLLECTIONS.USER);
         const userData = await userCollection.findOne({ email: this.data.email });
-        if (!userData || bcrypt.compareSync(this.data.password, userData.password)) {
+        if (!userData || !bcrypt.compareSync(this.data.password, userData.password)) {
             return false;
         }
+        this.data = new UserSchema(userData);
         return true;
     }
 
@@ -48,6 +49,7 @@ class User extends BaseModel {
                 const user = new UserSchema(this.data);
                 await userCollection.insertOne(user);
                 logger.info(`User with email ${this.data.email} created`);
+                return user;
             } else {
                 throw new AppError({
                     message: 'User with this email already exists',

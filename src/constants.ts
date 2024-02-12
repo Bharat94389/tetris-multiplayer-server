@@ -23,7 +23,8 @@ export const COLLECTIONS = {
     PLAYER_STATS: 'PlayerStats',
 };
 
-export const SOCKET_EVENTS = {
+export const GAME_EVENTS = {
+    NEW_GAME: 'NEW_GAME',
     START_GAME: 'START_GAME',
     NEXT_PIECE: 'NEXT_PIECE',
     GAME_OVER: 'GAME_OVER',

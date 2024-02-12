@@ -1,15 +1,15 @@
-import express, { Request as ExpressRequest, Response, NextFunction, Express } from 'express';
+import express, { Request, Response, NextFunction, Express } from 'express';
 import http from 'http';
 import cors from 'cors';
 import { Server as HttpServer } from 'http';
 
 import Socket from './socket';
 import { errorHandler, authHandler, requestLogger, responseLogger } from './middleware';
-import { logger } from './utils';
-import { AuthenticationRouter } from './router';
+import { Payload, logger } from './utils';
+import { AuthenticationRouter, GameRouter } from './router';
 
-interface Request extends ExpressRequest {
-    user?: any;
+interface AuthenticatedRequest extends Request {
+    user: Payload;
 }
 
 class Server {
@@ -43,6 +43,7 @@ class Server {
     setRoutes() {
         this.app.use('/', new AuthenticationRouter().router);
         this.app.use('/', authHandler);
+        this.app.use('/game', new GameRouter().router);
     }
 
     setPostRequestHandlers() {
@@ -58,4 +59,4 @@ class Server {
 
 export default Server;
 
-export { HttpServer, Request, Response, NextFunction, Express };
+export { HttpServer, AuthenticatedRequest, Request, Response, NextFunction, Express };

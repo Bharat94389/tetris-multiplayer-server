@@ -1,5 +1,3 @@
-import AppError from './appError';
-import logger from './logger';
-import jwt from './jwt';
-
-export { AppError, logger, jwt };
+export { default as AppError } from './appError';
+export { default as logger } from './logger';
+export { default as jwt, Payload } from './jwt';
