@@ -1,7 +1,7 @@
-import { jwt, logger } from '../utils';
-import { Request, Response, NextFunction } from '../server';
+import { AppError, jwt } from '../utils';
+import { Response, NextFunction } from '../server';
 
-const authHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+const authHandler = (req: any, res: Response, next: NextFunction): void => {
     if (req.headers.authorization) {
         const [authType, token] = req.headers.authorization.split(' ');
 
@@ -14,12 +14,7 @@ const authHandler = async (req: Request, res: Response, next: NextFunction): Pro
         }
     }
 
-    res.sendStatus(401).end();
-    logger.info(res.statusMessage, {
-        statusCode: res.statusCode,
-        url: req.url,
-        method: req.method,
-    });
+    next(new AppError({ message: 'Unauthorized', status: 401 }));
 };
 
 export default authHandler;

@@ -14,20 +14,21 @@ class AuthenticationRouter extends BaseRouter {
         this.setRoutes();
     }
 
-    setRoutes(): void {
+    setRoutes() {
         this.router.post('/login', this.tryCatch(this.login.bind(this)));
         this.router.post('/signup', this.tryCatch(this.signup.bind(this)));
     }
 
-    async login(req: Request, res: Response): Promise<void> {
+    async login(req: Request, res: Response) {
         const { email, password }: { email: string; password: string } = req.body;
         const result = await this.authenticationController.login({ email, password });
         res.json(result);
     }
 
-    async signup(req: Request, res: Response): Promise<void> {
-        const { email, password }: UserSchema = req.body;
+    async signup(req: Request, res: Response) {
+        const { username, email, password }: UserSchema = req.body;
         const result = await this.authenticationController.signup({
+            username,
             email,
             password,
         });
@@ -35,4 +36,4 @@ class AuthenticationRouter extends BaseRouter {
     }
 }
 
-export default AuthenticationRouter;
+export { AuthenticationRouter };

@@ -1,3 +1,2 @@
-import AuthenticationController from './authenticationController';
-
-export { AuthenticationController };
+export { AuthenticationController } from './authenticationController';
+export { GameController } from './gameController';

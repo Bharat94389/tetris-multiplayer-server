@@ -1,57 +1,67 @@
 import bcrypt from 'bcrypt';
-import { Collection, FindOptions, WithId } from 'mongodb';
-import { logger } from '../../utils';
-import { UserSchema } from '../schema';
+import { FindOptions } from 'mongodb';
 import database from '../database';
+import BaseModel from './base.model';
+import { UserSchema, UserData } from '../schema';
+import { AppError, logger } from '../../utils';
 import { COLLECTIONS } from '../../constants';
 
-class User {
-    data: UserSchema | undefined;
+class User extends BaseModel {
+    data?: UserData;
 
-    constructor(data?: UserSchema) {
-        this.data = data;
-    }
-
-    private generateHash(password: string): string {
-        return bcrypt.hashSync(password, bcrypt.genSaltSync(8));
-    }
-
-    validatePassword(password: string): boolean {
-        return bcrypt.compareSync(password, this.data?.password || '');
-    }
-
-    static find(filter: any, options?: FindOptions<UserSchema>) {
+    async authenticate(): Promise<boolean> {
+        if (!this.data || !this.data.email || !this.data.password) {
+            return false;
+        }
         const userCollection = database.getCollection<UserSchema>(COLLECTIONS.USER);
-        return userCollection.find(filter, options);
+        const userData = await userCollection.findOne({ email: this.data.email });
+        if (!userData || !bcrypt.compareSync(this.data.password, userData.password)) {
+            return false;
+        }
+        this.data = new UserSchema(userData);
+        return true;
+    }
+
+    static async find(filter: any, options?: FindOptions<UserSchema>) {
+        const userCollection = database.getCollection<UserSchema>(COLLECTIONS.USER);
+        const usersData = await userCollection.find(filter, options).toArray();
+        return usersData.map((userData) => new UserSchema(userData));
     }
 
     static async findOne(
         filter: any,
         options?: FindOptions<UserSchema>
-    ): Promise<WithId<UserSchema> | null> {
+    ): Promise<UserSchema | null> {
         const userCollection = database.getCollection<UserSchema>(COLLECTIONS.USER);
-        return await userCollection.findOne(filter, options);
+        const userData = await userCollection.findOne(filter, options);
+        if (!userData) {
+            return null;
+        }
+        return new UserSchema(userData);
     }
 
-    async create(): Promise<boolean> {
+    async create() {
         if (this.data) {
             const userCollection = database.getCollection<UserSchema>(COLLECTIONS.USER);
-            const users = await userCollection.find({ email: this.data.email }).toArray();
+            const users = await userCollection.findOne({ email: this.data.email });
 
-            if (users.length === 0) {
-                this.data.isVerified = false;
-                this.data.password = this.generateHash(this.data.password);
-                await userCollection.insertOne(this.data);
+            if (!users) {
+                const user = new UserSchema(this.data);
+                await userCollection.insertOne(user);
                 logger.info(`User with email ${this.data.email} created`);
-                return true;
+                return user;
+            } else {
+                throw new AppError({
+                    message: 'User with this email already exists',
+                    status: 400,
+                });
             }
+        } else {
+            throw new AppError({
+                message: 'Invalid User Data',
+                status: 400,
+            });
         }
-        return false;
-    }
-
-    async update(email: string, data: Object): Promise<void> {
-        const userCollection = database.getCollection<UserSchema>(COLLECTIONS.USER);
-        await userCollection.updateOne({ email }, { $set: data });
     }
 }
 
