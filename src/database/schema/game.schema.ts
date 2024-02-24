@@ -1,5 +1,6 @@
 import { uuid } from 'uuidv4';
 import { GAME_STATUS } from '../../constants';
+import { nextPiece } from '../../utils';
 
 type TStatus =
     | typeof GAME_STATUS.IN_PROGRESS
@@ -24,7 +25,7 @@ class GameSchema implements GameData {
     constructor(gameData: GameData) {
         this.gameId = gameData.gameId || uuid();
         this.owner = gameData.owner;
-        this.tSequence = gameData.tSequence || '';
+        this.tSequence = gameData.tSequence || nextPiece();
         this.createdAt = gameData.createdAt || new Date();
         this.status = gameData.status || GAME_STATUS.WAITING;
     }
