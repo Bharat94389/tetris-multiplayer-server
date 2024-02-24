@@ -1,4 +1,4 @@
-import { User } from '../database';
+import { User } from '../database/models';
 import { AppError, jwt } from '../utils';
 
 interface LoginParams {

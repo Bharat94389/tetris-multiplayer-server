@@ -20,7 +20,7 @@ class Socket {
         });
 
         this.io.use(this.authenticate);
-        this.io.on('connect', this.setupSocket);
+        this.io.on('connection', this.setupSocket);
     }
 
     authenticate(socket: IoSocket, next: any) {
@@ -32,11 +32,16 @@ class Socket {
         authHandler({ headers: { authorization: `Bearer ${token}` } } as any, {} as any, next);
     }
 
-    setupSocket(socket: IoSocket): void {
-        const socketHelper = new SocketHelper({ socket });
+    async setupSocket(socket: IoSocket) {
+        const gameId = socket.handshake['query']['gameId'];
+        if (!gameId || Array.isArray(gameId)) {
+            return;
+        }
+        const socketHelper = new SocketHelper({ socket, gameId });
 
-        socket.on(GAME_EVENTS.NEW_GAME, () => socketHelper.createNewGame());
+        await socketHelper.joinGame();
 
+        socket.on(GAME_EVENTS.START_GAME, () => socketHelper.startGame());
         socket.on('disconnect', () => socketHelper.disconnect());
     }
 }

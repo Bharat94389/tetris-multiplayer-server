@@ -11,6 +11,11 @@ export const GAME_CONSTANTS = {
     },
 };
 
+export const CACHE = {
+    GAME: 'GAME',
+    PLAYER: 'PLAYER',
+};
+
 export const GAME_STATUS = {
     IN_PROGRESS: 'IN_PROGRESS',
     COMPLETED: 'COMPLETED',
@@ -24,8 +29,10 @@ export const COLLECTIONS = {
 };
 
 export const GAME_EVENTS = {
-    NEW_GAME: 'NEW_GAME',
     START_GAME: 'START_GAME',
     NEXT_PIECE: 'NEXT_PIECE',
     GAME_OVER: 'GAME_OVER',
+    GAME_DATA: 'GAME_DATA',
+    PLAYER_JOINED: 'PLAYER_JOINED',
+    PLAYER_LEFT: 'PLAYER_LEFT',
 };
