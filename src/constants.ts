@@ -5,7 +5,7 @@ export const GAME_CONSTANTS = {
         S: 's',
         Z: 'z',
         T: 't',
-        RL: 'rl',
+        J: 'j',
         O: 'o',
         I: 'i',
     },
@@ -35,4 +35,5 @@ export const GAME_EVENTS = {
     GAME_DATA: 'GAME_DATA',
     PLAYER_JOINED: 'PLAYER_JOINED',
     PLAYER_LEFT: 'PLAYER_LEFT',
+    SCORE_UPDATE: 'SCORE_UPDATE',
 };
