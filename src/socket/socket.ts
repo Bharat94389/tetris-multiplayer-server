@@ -42,6 +42,9 @@ class Socket {
         await socketHelper.joinGame();
 
         socket.on(GAME_EVENTS.START_GAME, () => socketHelper.startGame());
+        socket.on(GAME_EVENTS.GAME_OVER, () => socketHelper.gameOver());
+        socket.on(GAME_EVENTS.NEXT_PIECE, (data) => socketHelper.nextPiece(data));
+        socket.on(GAME_EVENTS.SCORE_UPDATE, (data) => socketHelper.scoreUpdate(data));
         socket.on('disconnect', () => socketHelper.disconnect());
     }
 }

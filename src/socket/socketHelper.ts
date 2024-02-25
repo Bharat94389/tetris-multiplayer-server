@@ -1,8 +1,8 @@
 import { IoSocket } from './socket';
-import { jwt, logger, redisClient } from '../utils';
+import { jwt, logger, nextPiece, redisClient } from '../utils';
 import { Game, PlayerStats } from '../database/models';
 import { GameSchema } from '../database/schema';
-import { GAME_EVENTS } from '../constants';
+import { GAME_EVENTS, GAME_STATUS } from '../constants';
 
 interface UserData {
     email: string;
@@ -37,9 +37,21 @@ class SocketHelper {
     }
 
     async startGame() {
-        // Generate
         // Update Game Status
+        const gameKey = redisClient.getGameCacheKey(this.gameId);
+        let gameData = await redisClient.getOne(gameKey);
+        if (!gameData) {
+            return;
+        }
+        if (gameData.status !== GAME_STATUS.WAITING) {
+            return;
+        }
+        gameData.status = GAME_STATUS.IN_PROGRESS;
+        await redisClient.set(gameKey, gameData);
+
         // Notify players that game has started
+        this.socket.in(this.gameId).emit(GAME_EVENTS.START_GAME);
+        this.socket.emit(GAME_EVENTS.START_GAME);
     }
 
     async getGameData(): Promise<GameSchema | null> {
@@ -80,8 +92,48 @@ class SocketHelper {
         await redisClient.set(playerKey, {
             ...newPlayerStats,
             active: true,
+            gameOver: false,
         });
         return newPlayerStats;
+    }
+
+    async nextPiece({ pieceNumber }: { pieceNumber: number }) {
+        // Check for game data in redis cache
+        const gameKey = redisClient.getGameCacheKey(this.gameId);
+        let gameData = await redisClient.getOne(gameKey);
+        if (!gameData) {
+            return;
+        }
+        // generate game piece if needed
+        if (gameData.tSequence.length <= pieceNumber) {
+            gameData.tSequence += nextPiece();
+            await redisClient.set(gameKey, gameData);
+        }
+        this.socket.emit(GAME_EVENTS.NEXT_PIECE, gameData);
+    }
+
+    async scoreUpdate({ score, pieceNumber }: { score: number; pieceNumber: number }) {
+        // Update player stats in redis cache
+        const playerKey = redisClient.getPlayerCacheKey(this.gameId, this.userData.username);
+        const playerStats = await redisClient.getOne(playerKey);
+        if (!playerStats) {
+            return;
+        }
+        playerStats.score = score;
+        playerStats.numberOfPieces = pieceNumber;
+        await redisClient.set(playerKey, playerStats);
+
+        this.socket.to(this.gameId).emit(GAME_EVENTS.SCORE_UPDATE, playerStats);
+    }
+
+    async gameOver() {
+        // Update player stats in redis cache
+        const playerKey = redisClient.getPlayerCacheKey(this.gameId, this.userData.username);
+        const playerStats = await redisClient.getOne(playerKey);
+        playerStats.gameover = true;
+        await redisClient.set(playerKey, playerStats);
+
+        this.socket.to(this.gameId).emit(GAME_EVENTS.GAME_OVER, playerStats);
     }
 
     async disconnect() {
@@ -92,9 +144,7 @@ class SocketHelper {
         await redisClient.set(playerKey, playerStats);
 
         // Notify others that this player has left the game
-        this.socket
-            .to(this.gameId)
-            .emit(GAME_EVENTS.PLAYER_LEFT, { username: this.userData.username });
+        this.socket.to(this.gameId).emit(GAME_EVENTS.PLAYER_LEFT, playerStats);
 
         // Remove the player from the room
         this.socket.leave(this.gameId);

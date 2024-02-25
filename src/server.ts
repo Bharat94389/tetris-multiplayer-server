@@ -2,6 +2,7 @@ import express, { Request, Response, NextFunction, Express } from 'express';
 import http from 'http';
 import cors from 'cors';
 import { Server as HttpServer } from 'http';
+import path from 'path';
 
 import Socket from './socket';
 import { errorHandler, authHandler, requestLogger, responseLogger } from './middleware';
@@ -23,7 +24,8 @@ class Server {
 
         this.app = express();
         this.setMiddleware();
-        this.setRoutes();
+        this.setUIRoutes();
+        this.setApiRoutes();
         this.setPostRequestHandlers();
 
         this.httpServer = http.createServer(this.app);
@@ -33,6 +35,7 @@ class Server {
     }
 
     setMiddleware() {
+        this.app.use(express.static('src/web'));
         this.app.use(cors());
         this.app.use(express.json());
 
@@ -40,10 +43,21 @@ class Server {
         this.app.use(responseLogger);
     }
 
-    setRoutes() {
-        this.app.use('/', new AuthenticationRouter().router);
-        this.app.use('/', authHandler);
-        this.app.use('/game', new GameRouter().router);
+    setUIRoutes() {
+        this.app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'web', 'index.html')));
+        this.app.get('/login', (req, res) =>
+            res.sendFile(path.join(__dirname, 'web', 'login.html'))
+        );
+        this.app.get('/signup', (req, res) =>
+            res.sendFile(path.join(__dirname, 'web', 'signup.html'))
+        );
+        this.app.get('/game/:gameId', (req, res) => res.sendFile(path.join(__dirname, 'web', 'game.html')));
+    }
+
+    setApiRoutes() {
+        this.app.use('/api', new AuthenticationRouter().router);
+        this.app.use('/api', authHandler);
+        this.app.use('/api/game', new GameRouter().router);
     }
 
     setPostRequestHandlers() {
@@ -51,7 +65,7 @@ class Server {
     }
 
     listen() {
-        this.httpServer.listen(this.port, () => {
+        this.httpServer.listen(this.port, '0.0.0.0', () => {
             logger.info(`Server running on port: ${this.port}`);
         });
     }

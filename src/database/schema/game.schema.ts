@@ -25,7 +25,7 @@ class GameSchema implements GameData {
     constructor(gameData: GameData) {
         this.gameId = gameData.gameId || uuid();
         this.owner = gameData.owner;
-        this.tSequence = gameData.tSequence || nextPiece();
+        this.tSequence = gameData.tSequence || (nextPiece() + nextPiece());
         this.createdAt = gameData.createdAt || new Date();
         this.status = gameData.status || GAME_STATUS.WAITING;
     }

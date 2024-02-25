@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Multiplayer Tetris</title>
+        <script src="/js/auth.js"></script>
+        <link rel="icon" href="data:;base64,iVBORw0KGgo=" />
+        <link rel="stylesheet" href="/css/game.css" />
+    </head>
+    <body>
+        <div id="gameWrapper">
+            <div style="display: flex; justify-content: space-around">
+                <div id="gameContainer">
+                    <div id="gridContainer"></div>
+                </div>
+                <div id="detailsContainer">
+                    <div id="tetrisNextPiece"></div>
+                    <div id="tetrisScore"></div>
+                    <div>
+                        <h3>Leaderboard</h3>
+                        <div id="leaderboard"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <script src="/js/game/gameConstants.js"></script>
+        <script src="/js/game/gameHelper.js"></script>
+        <script src="/js/socket.js"></script>
+        <script src="/js/game/game.js"></script>
+    </body>
+</html>

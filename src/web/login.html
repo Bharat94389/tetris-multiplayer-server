@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Multiplayer Tetris</title>
+        <link rel="icon" href="data:;base64,iVBORw0KGgo=" />
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <script>
+            const handleSubmit = async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                try {
+                    const res = await axios.post('/api/login', { email, password });
+                    localStorage.setItem('jwt', res.data.token);
+                    window.location = '/';
+                } catch (err) {
+                    console.log(err);
+                }
+            };
+
+            const handleSignup = () => (window.location = '/signup');
+        </script>
+    </head>
+    <body>
+        <form onsubmit="handleSubmit(event)">
+            <label for="email">Email:</label>
+            <input type="email" name="email" id="email" required />
+            <label for="password">Password:</label>
+            <input type="password" name="password" id="password" required />
+            <input type="submit" />
+        </form>
+        <button onclick="handleSignup()">Signup</button>
+    </body>
+</html>

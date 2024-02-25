@@ -1,0 +1,28 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+#gameWrapper {
+    padding-top: 10px;
+    height: 100vh;
+    width: 100vw;
+}
+
+#gameContainer {
+    text-align: center;
+}
+
+#startButton {
+    margin-top: 10px;
+}
+
+.tetris-row {
+    display: flex;
+}
+
+.tetris-block {
+    width: 25px;
+    height: 25px;
+    border: 1px solid black;
+}
