@@ -11,7 +11,9 @@ let level,
     gameInterval,
     currPieceIndex,
     gameOver,
-    status;
+    status,
+    gameData,
+    playerData;
 
 // declare all helper functions
 const createNewTetrisGrid = () => {
@@ -75,6 +77,10 @@ const showScore = () => {
     document.getElementById(
         'tetrisScore'
     ).innerHTML = `Score: ${score} | Lines Cleared: ${linesCleared}`;
+};
+
+const showLevel = () => {
+    document.getElementById('tetrisLevel').innerHTML = `Level: ${level}`;
 };
 
 const isValidMove = (blockXY, blockState) => {
@@ -175,4 +181,20 @@ const mergeCurrBlockAndTetris = () => {
             }
         });
     });
+};
+
+const setPlayerData = (data) => {
+    const row = document.getElementById(`leaderboard-${data.username}`);
+    if (row) {
+        row.innerHTML = `${data.username} | ${data.score} | ${data.active}${
+            data.gameOver ? ' | GameOver' : ''
+        }`;
+    } else {
+        const div = document.createElement('div');
+        div.id = `leaderboard-${data.username}`;
+        div.innerHTML = `${data.username} | ${data.score} | ${data.active}${
+            data.gameOver ? ' | GameOver' : ''
+        }`;
+        leaderboard.appendChild(div);
+    }
 };
