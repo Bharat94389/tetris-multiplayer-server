@@ -1,11 +1,11 @@
 const init = () => {
     // Initialize game variables
     tetrisGrid = createNewTetrisGrid();
+    score = playerData.score;
+    linesCleared = playerData.linesCleared;
+    currPieceIndex = playerData.numberOfPieces;
     level = 0;
     delay = TETRIS_DELAY[level];
-    score = 0;
-    linesCleared = 0;
-    currPieceIndex = 0;
     gameOver = false;
     currPiece = gameData.tSequence[currPieceIndex];
     nextPiece = gameData.tSequence[currPieceIndex + 1];
@@ -17,8 +17,11 @@ const init = () => {
     showGrid();
     showNextPiece();
     showScore();
+    showLevel();
 
-    if (gameData.status === 'IN_PROGRESS') {
+    document.getElementById('info-box').remove();
+
+    if (!playerData.gameOver) {
         startGame();
     }
 };
@@ -61,6 +64,7 @@ const updateScore = () => {
             TETRIS_LINES_CLEAR_TO_NEXT_LEVEL[level] <= linesCleared
         ) {
             level++;
+            showLevel();
             delay = TETRIS_DELAY[level];
             clearInterval(gameInterval);
             startGame();
@@ -88,10 +92,12 @@ const startGame = () => {
         mergeCurrBlockAndTetris();
 
         if (gameOver) {
-            const player = document.getElementById(`leaderboard-${userDetails.username}`);
-            if (player) {
-                player.innerHTML = `${userDetails.username} | ${score} | true | Game Over`;
-            }
+            setPlayerData({
+                username: userDetails.username,
+                score,
+                active: true,
+                gameOver: true,
+            });
             gameOver = true;
             socket.emit(EVENTS.GAME_OVER, { score });
             clearInterval(gameInterval);
@@ -129,16 +135,6 @@ socket.on(EVENTS.NEXT_PIECE, (data) => {
     showNextPiece();
 });
 
-socket.on(EVENTS.SCORE_UPDATE, (data) => {
-    const player = document.getElementById(`leaderboard-${data.username}`);
-    if (player) {
-        player.innerHTML = `${data.username} | ${data.score} | ${data.active}`;
-    }
-});
+socket.on(EVENTS.SCORE_UPDATE, (data) => setPlayerData(data));
 
-socket.on(EVENTS.GAME_OVER, (data) => {
-    const player = document.getElementById(`leaderboard-${data.username}`);
-    if (player) {
-        player.innerHTML = `${data.username} | ${data.score} | ${data.active} | Game Over`;
-    }
-});
+socket.on(EVENTS.GAME_OVER, (data) => setPlayerData(data));

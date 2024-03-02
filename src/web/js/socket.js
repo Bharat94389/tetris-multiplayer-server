@@ -1,6 +1,5 @@
 // data setup
 const gameId = window.location.pathname.split('/').splice(-1)[0];
-let gameData;
 
 // socket setup
 const socket = io('/', { auth: { token: localStorage.getItem('jwt') }, query: { gameId } });
@@ -39,32 +38,14 @@ socket.on(EVENTS.GAME_DATA, (data) => {
     // add players to leaderboard
     const leaderboard = document.getElementById('leaderboard');
     leaderboard.innerHTML = '';
-    data.currentPlayers.forEach((player) => {
-        const div = document.createElement('div');
-        div.id = `leaderboard-${player.username}`;
-        div.innerHTML = `${player.username} | ${player.score} | ${player.active}`;
-        leaderboard.appendChild(div);
-    });
+    data.currentPlayers.forEach((player) => setPlayerData(player));
+
+    playerData = data.currentPlayers.find((p) => p.username === userDetails.username);
 
     // initialize the game
     init();
 });
 
-socket.on(EVENTS.PLAYER_JOINED, (data) => {
-    const row = document.getElementById(`leaderboard-${data.username}`);
-    if (row) {
-        row.innerHTML = `${data.username} | ${data.score} | ${data.active}`;
-    } else {
-        const div = document.createElement('div');
-        div.id = `leaderboard-${data.username}`;
-        div.innerHTML = `${data.username} | ${data.score} | ${data.active}`;
-        leaderboard.appendChild(div);
-    }
-});
+socket.on(EVENTS.PLAYER_JOINED, (data) => setPlayerData(data));
 
-socket.on(EVENTS.PLAYER_LEFT, (data) => {
-    const row = document.getElementById(`leaderboard-${data.username}`);
-    if (row) {
-        row.innerHTML = `${data.username} | ${data.score} | ${data.active}`;
-    }
-});
+socket.on(EVENTS.PLAYER_LEFT, (data) => setPlayerData(data));

@@ -88,12 +88,11 @@ class SocketHelper {
         }
 
         // Create new player stats since player is not present in the redis cache
-        const newPlayerStats = new PlayerStats({ gameId: this.gameId, username, score: 0 }).data;
-        await redisClient.set(playerKey, {
-            ...newPlayerStats,
+        const newPlayerStats = {
+            ...new PlayerStats({ gameId: this.gameId, username, score: 0 }).data,
             active: true,
-            gameOver: false,
-        });
+        };
+        await redisClient.set(playerKey, newPlayerStats);
         return newPlayerStats;
     }
 
@@ -130,10 +129,14 @@ class SocketHelper {
         // Update player stats in redis cache
         const playerKey = redisClient.getPlayerCacheKey(this.gameId, this.userData.username);
         const playerStats = await redisClient.getOne(playerKey);
-        playerStats.gameover = true;
+        if (!playerStats) {
+            return;
+        }
+        playerStats.gameOver = true;
         await redisClient.set(playerKey, playerStats);
 
         this.socket.to(this.gameId).emit(GAME_EVENTS.GAME_OVER, playerStats);
+        await new PlayerStats(playerStats).create();
     }
 
     async disconnect() {
@@ -149,7 +152,7 @@ class SocketHelper {
         // Remove the player from the room
         this.socket.leave(this.gameId);
 
-        logger.info(`User disconnected: ${this.socket.id}`);
+        logger.info(`User disconnected: ${this.userData.username}`);
     }
 }
 

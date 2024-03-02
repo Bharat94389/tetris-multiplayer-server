@@ -5,8 +5,8 @@ import { CACHE } from '../constants';
 class RedisClient {
     client: Redis;
 
-    constructor({ host, port, password }: any) {
-        this.client = new Redis({ host, port, password });
+    constructor({ host, port, username, password }: any) {
+        this.client = new Redis({ host, port, username, password });
     }
 
     getGameCacheKey(gameId: string) {
@@ -32,7 +32,7 @@ class RedisClient {
     async getMany(pattern: string) {
         const keys = await this.client.keys(pattern);
         const data = await this.client.mget(keys);
-        return data.map(d => JSON.parse(d || ''));
+        return data.map((d) => JSON.parse(d || ''));
     }
 }
 
