@@ -19,9 +19,9 @@ const init = () => {
     showScore();
     showLevel();
 
-    document.getElementById('info-box').remove();
+    document.getElementById('info-box')?.remove();
 
-    if (!playerData.gameOver) {
+    if (!playerData.gameOver && gameData.status === 'IN_PROGRESS') {
         startGame();
     }
 };
@@ -78,7 +78,7 @@ const updateScore = () => {
         if (player) {
             player.innerHTML = `${userDetails.username} | ${score} | ${true}`;
         }
-        socket.emit(EVENTS.SCORE_UPDATE, { score, pieceNumber: currPieceIndex });
+        socket.emit(EVENTS.SCORE_UPDATE, { score, pieceNumber: currPieceIndex, linesCleared });
         showScore();
     }
 };
@@ -106,15 +106,17 @@ const startGame = () => {
         // reset values
         currBlockXY = { x: 3, y: 0 };
         currPiece = nextPiece;
-        if (gameData.tSequence.length <= currPieceIndex) {
-            socket.emit(EVENTS.NEXT_PIECE, { pieceNumber: currPieceIndex });
-            nextPiece = '...';
-        } else {
+        if (currPieceIndex < gameData.tSequence.length) {
             nextPiece = gameData.tSequence[currPieceIndex];
-            showNextPiece();
+        } else {
+            nextPiece = '...';
         }
         currBlockState = TETRIS_BLOCKS[currPiece];
+        if (gameData.tSequence.length < currPieceIndex + 5) {
+            socket.emit(EVENTS.NEXT_PIECE, { pieceNumber: currPieceIndex });
+        }
         // update UI
+        showNextPiece();
         updateScore();
         showNextPiece();
         showGrid();

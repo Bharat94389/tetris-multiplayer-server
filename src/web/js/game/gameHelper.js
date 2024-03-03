@@ -36,6 +36,7 @@ const getBackGroundColor = (state) => {
 
 const getState = (tetrisState, row, col) => {
     if (
+        currBlockState &&
         currBlockXY.x <= col &&
         currBlockXY.y <= row &&
         currBlockXY.x + currBlockState[0].length > col &&
@@ -70,7 +71,9 @@ const showGrid = () => {
 };
 
 const showNextPiece = () => {
-    document.getElementById('tetrisNextPiece').innerHTML = `Next Piece: ${nextPiece}`;
+    document.getElementById(
+        'tetrisNextPiece'
+    ).innerHTML = `Next Piece: ${nextPiece} | currPieceIndex: ${currPieceIndex} | total: ${gameData.tSequence.length}`;
 };
 
 const showScore = () => {
