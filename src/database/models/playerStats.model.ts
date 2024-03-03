@@ -9,10 +9,14 @@ class PlayerStats extends BaseModel {
 
     async create() {
         if (this.data) {
-            const statsCollection = database.getCollection<PlayerStatsSchema>(COLLECTIONS.PLAYER_STATS);
+            const statsCollection = database.getCollection<PlayerStatsSchema>(
+                COLLECTIONS.PLAYER_STATS
+            );
             const stats = new PlayerStatsSchema(this.data);
             await statsCollection.insertOne(stats);
-            logger.info(`Stats for user ${stats.username} for gameId ${stats.gameId} added to database`);
+            logger.info(
+                `Stats for user ${stats.username} for gameId ${stats.gameId} added to database`
+            );
         } else {
             throw new AppError({
                 message: 'Invalid Stats Data',

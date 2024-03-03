@@ -1,6 +1,7 @@
 import { Redis } from 'ioredis';
 import { redisConfig } from '../config';
 import { CACHE } from '../constants';
+import AppError from './appError';
 
 class RedisClient {
     client: Redis;
@@ -18,21 +19,33 @@ class RedisClient {
     }
 
     async set(key: string, data: any) {
-        await this.client.set(key, JSON.stringify(data));
+        try {
+            await this.client.set(key, JSON.stringify(data));
+        } catch (err: any) {
+            throw new AppError({ message: err.message, args: err.stack });
+        }
     }
 
     async getOne(key: string) {
-        const data = await this.client.get(key);
-        if (!data) {
-            return null;
+        try {
+            const data = await this.client.get(key);
+            if (!data) {
+                return null;
+            }
+            return JSON.parse(data);
+        } catch (err: any) {
+            throw new AppError({ message: err.message, args: err.stack });
         }
-        return JSON.parse(data);
     }
 
     async getMany(pattern: string) {
-        const keys = await this.client.keys(pattern);
-        const data = await this.client.mget(keys);
-        return data.map((d) => JSON.parse(d || ''));
+        try {
+            const keys = await this.client.keys(pattern);
+            const data = await this.client.mget(keys);
+            return data.map((d) => JSON.parse(d || ''));
+        } catch (err: any) {
+            throw new AppError({ message: err.message, args: err.stack });
+        }
     }
 }
 

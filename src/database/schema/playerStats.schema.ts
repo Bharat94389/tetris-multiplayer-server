@@ -1,10 +1,10 @@
 interface PlayerStatsData {
     username: string;
     gameId: string;
-    gameOver: boolean;
+    gameOver?: boolean;
     score: number;
-    numberOfPieces: number;
-    linesCleared: number;
+    numberOfPieces?: number;
+    linesCleared?: number;
     createdAt?: Date;
 }
 
