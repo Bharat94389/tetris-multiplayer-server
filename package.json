@@ -6,7 +6,7 @@
     "scripts": {
         "start": "tsc && node dist/index.js",
         "dev": "nodemon src/index.ts",
-        "build": "tsc",
+        "build": "tsc && cp -r src/web/ dist/web/",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "author": "Bharat Thakur",
