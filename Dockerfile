@@ -14,4 +14,4 @@ RUN if [ "$NODE_ENV" = "production" ]; then npm install --omit=dev; else npm ins
 # Copy source code
 COPY ./src /app/src
 
-CMD ["tail", "-f", "/dev/null"]
+CMD ["npm", "start"]
