@@ -1,3 +1,3 @@
-export { default as User } from './user.model';
-export { default as Game } from './game.model';
-export { default as PlayerStats } from './playerStats.model';
+export { User, TUser } from './user';
+export { Game, TGame } from './game';
+export { PlayerStats, TPlayerStats } from './playerStats';

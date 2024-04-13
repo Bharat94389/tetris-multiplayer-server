@@ -1,4 +1,6 @@
-import { User } from '../database/models';
+import { COLLECTIONS } from '../constants';
+import database from '../database';
+import { TUser, User } from '../database/models';
 import { AppError, jwt } from '../utils';
 
 interface LoginParams {
@@ -13,20 +15,41 @@ interface SignupParams {
 }
 
 class AuthenticationController {
-    async login({ email, password }: LoginParams): Promise<{ token: string | null }> {
-        const user = new User({ email, password });
-        if (!(await user.authenticate())) {
-            throw new AppError({ message: 'Unauthorized', status: 401 });
+    async login({ email, password }: LoginParams): Promise<{ token: string } | null> {
+        try {
+            const userData = (await database.findOne<TUser>(COLLECTIONS.USER, { email })) as User;
+            if (!userData || !userData.compareHash(password)) {
+                return null;
+            }
+            const token = await jwt.generate(userData);
+            return { token };
+        } catch (err: any) {
+            throw new AppError({
+                message: err.message,
+                args: {
+                    stack: err.stack,
+                    email,
+                },
+            });
         }
-        const token = await jwt.generate({
-            email: user.data?.email || '',
-            username: user.data?.username || '',
-        });
-        return { token };
     }
 
-    async signup(userData: SignupParams): Promise<void> {
-        await new User(userData).create();
+    async signup(userData: SignupParams): Promise<{ token: string } | null> {
+        try {
+            const user = new User(userData);
+            user.encryptPassword();
+            await database.create(COLLECTIONS.USER, user);
+
+            const token = await jwt.generate(userData);
+            return { token };
+        } catch (err: any) {
+            throw new AppError({
+                message: err.message,
+                args: {
+                    stack: err.stack,
+                },
+            });
+        }
     }
 }
 

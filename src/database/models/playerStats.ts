@@ -1,4 +1,4 @@
-interface PlayerStatsData {
+type TPlayerStats = {
     username: string;
     gameId: string;
     gameOver?: boolean;
@@ -8,7 +8,7 @@ interface PlayerStatsData {
     createdAt?: Date;
 }
 
-class PlayerStatsSchema {
+class PlayerStats {
     username: string;
     gameId: string;
     score: number;
@@ -17,7 +17,7 @@ class PlayerStatsSchema {
     linesCleared: number;
     createdAt: Date;
 
-    constructor(gameStatsData: PlayerStatsData) {
+    constructor(gameStatsData: TPlayerStats) {
         this.username = gameStatsData.username;
         this.gameId = gameStatsData.gameId;
         this.gameOver = gameStatsData.gameOver || false;
@@ -28,4 +28,4 @@ class PlayerStatsSchema {
     }
 }
 
-export { PlayerStatsData, PlayerStatsSchema };
+export { PlayerStats, TPlayerStats };

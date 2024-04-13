@@ -9,7 +9,7 @@ export interface Payload {
 class JWT {
     secretKey = String(process.env.SECRET_KEY);
 
-    async generate({ email, username }: Payload): Promise<string | null> {
+    async generate({ email, username }: Payload): Promise<string> {
         return jwt.sign({ email, username }, this.secretKey, { expiresIn: '1d' });
     }
 

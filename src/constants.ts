@@ -12,20 +12,20 @@ export const GAME_CONSTANTS = {
 };
 
 export const CACHE = {
-    GAME: 'GAME',
-    PLAYER: 'PLAYER',
+    GAME: 'GAME' as const,
+    PLAYER: 'PLAYER' as const,
 };
 
 export const GAME_STATUS = {
-    IN_PROGRESS: 'IN_PROGRESS',
-    COMPLETED: 'COMPLETED',
-    WAITING: 'WAITING',
+    IN_PROGRESS: 'IN_PROGRESS' as const,
+    COMPLETED: 'COMPLETED' as const,
+    WAITING: 'WAITING' as const,
 };
 
 export const COLLECTIONS = {
-    USER: 'Users',
-    GAME: 'Games',
-    PLAYER_STATS: 'PlayerStats',
+    USER: 'Users' as const,
+    GAME: 'Games' as const,
+    PLAYER_STATS: 'PlayerStats' as const,
 };
 
 export const GAME_EVENTS = {

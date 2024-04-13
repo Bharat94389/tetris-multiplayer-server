@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 import { validate } from 'email-validator';
 import { AppError } from '../../utils';
 
-interface UserData {
+type TUser = {
     username: string;
     email: string;
     password: string;
@@ -14,7 +14,7 @@ interface UserData {
     };
 }
 
-class UserSchema implements UserData {
+class User {
     username: string;
     email: string;
     password: string;
@@ -25,13 +25,13 @@ class UserSchema implements UserData {
         lastUpdated: Date;
     };
 
-    constructor(userData: UserData) {
+    constructor(userData: TUser) {
         this.username = userData.username;
         if (!validate(userData.email)) {
             throw new AppError({ message: 'Invalid Email', status: 400 });
         }
         this.email = userData.email;
-        this.password = this.generateHash(userData.password);
+        this.password = userData.password;
         this.isVerified = Boolean(userData.isVerified);
         this.createdAt = userData.createdAt || new Date();
         this.meta = {
@@ -43,9 +43,13 @@ class UserSchema implements UserData {
         }
     }
 
-    private generateHash(password: string): string {
-        return bcrypt.hashSync(password, bcrypt.genSaltSync(8));
+    encryptPassword() {
+        this.password = bcrypt.hashSync(this.password, bcrypt.genSaltSync(8));
+    }
+
+    compareHash(password: string): boolean {
+        return bcrypt.compareSync(password, this.password);
     }
 }
 
-export { UserData, UserSchema };
+export { User, TUser };
