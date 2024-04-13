@@ -9,11 +9,11 @@ class AppError extends Error {
     status: number;
     args: Object | undefined;
 
-    constructor({ message, status = 500, args }: ConstructorParams) {
+    constructor({ message, status, args }: ConstructorParams) {
         super();
 
         this.message = message;
-        this.status = status;
+        this.status = status || 500;
         this.args = args;
     }
 }

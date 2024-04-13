@@ -7,7 +7,7 @@ type TStatus =
     | typeof GAME_STATUS.COMPLETED
     | typeof GAME_STATUS.WAITING;
 
-interface GameData {
+type TGame = {
     gameId?: string;
     owner: string;
     tSequence?: string;
@@ -15,14 +15,14 @@ interface GameData {
     createdAt?: Date;
 }
 
-class GameSchema implements GameData {
+class Game {
     gameId: string;
     owner: string;
     tSequence: string;
     createdAt: Date;
     status: TStatus;
 
-    constructor(gameData: GameData) {
+    constructor(gameData: TGame) {
         this.gameId = gameData.gameId || uuid();
         this.owner = gameData.owner;
         this.tSequence = gameData.tSequence || nextNPieces(5);
@@ -31,4 +31,4 @@ class GameSchema implements GameData {
     }
 }
 
-export { GameData, GameSchema };
+export { TGame, Game };

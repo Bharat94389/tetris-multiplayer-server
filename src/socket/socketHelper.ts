@@ -1,15 +1,15 @@
 import { IoSocket } from './socket';
 import { jwt, logger, nextNPieces, redisClient } from '../utils';
-import { Game, PlayerStats } from '../database/models';
-import { GameSchema, PlayerStatsData, PlayerStatsSchema } from '../database/schema';
-import { GAME_EVENTS, GAME_STATUS } from '../constants';
+import { Game, TGame, TPlayerStats, PlayerStats } from '../database/models';
+import { COLLECTIONS, GAME_EVENTS, GAME_STATUS } from '../constants';
+import database from '../database';
 
 interface UserData {
     email: string;
     username: string;
 }
 
-interface PlayerStat extends PlayerStatsData {
+interface PlayerStat extends TPlayerStats {
     active: boolean;
 }
 
@@ -43,7 +43,7 @@ class SocketHelper {
     async startGame() {
         // Update Game Status
         const gameKey = redisClient.getGameCacheKey(this.gameId);
-        let gameData: GameSchema = await redisClient.getOne(gameKey);
+        let gameData: Game = await redisClient.getOne(gameKey);
         if (!gameData) {
             return;
         }
@@ -58,20 +58,16 @@ class SocketHelper {
         this.socket.emit(GAME_EVENTS.START_GAME);
     }
 
-    async getGameData(): Promise<GameSchema | null> {
+    async getGameData(): Promise<Game | null> {
         // Check for game data in redis cache
         const gameKey = redisClient.getGameCacheKey(this.gameId);
-        let gameData: GameSchema[] | GameSchema | null = await redisClient.getOne(gameKey);
+        let gameData: Game | null = await redisClient.getOne(gameKey);
         if (gameData && !Array.isArray(gameData)) {
             return gameData;
         }
 
         // Fetch the game data from database if gamedata is not found
-        gameData = await Game.find({ gameId: this.gameId });
-        if (gameData.length === 0) {
-            return null;
-        }
-        gameData = gameData[0];
+        gameData = (await database.findOne<TGame>(COLLECTIONS.GAME, { gameId: this.gameId })) as Game;
         // Update redis cache
         redisClient.set(gameKey, gameData);
         return gameData;
@@ -93,7 +89,7 @@ class SocketHelper {
 
         // Create new player stats since player is not present in the redis cache
         const newPlayerStats: PlayerStat = {
-            ...new PlayerStatsSchema({ gameId: this.gameId, username, score: 0 }),
+            ...new PlayerStats({ gameId: this.gameId, username, score: 0 }),
             active: true,
         };
         await redisClient.set(playerKey, newPlayerStats);
@@ -103,7 +99,7 @@ class SocketHelper {
     async nextPiece({ pieceNumber }: { pieceNumber: number }) {
         // Check for game data in redis cache
         const gameKey = redisClient.getGameCacheKey(this.gameId);
-        let gameData: GameSchema = await redisClient.getOne(gameKey);
+        let gameData: Game = await redisClient.getOne(gameKey);
         if (!gameData) {
             return;
         }
@@ -149,7 +145,7 @@ class SocketHelper {
         await redisClient.set(playerKey, playerStats);
 
         this.socket.to(this.gameId).emit(GAME_EVENTS.GAME_OVER, playerStats);
-        await new PlayerStats(playerStats).create();
+        await database.create(COLLECTIONS.PLAYER_STATS, playerStats);
     }
 
     async disconnect() {

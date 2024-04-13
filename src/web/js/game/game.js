@@ -116,7 +116,6 @@ const startGame = () => {
             socket.emit(EVENTS.NEXT_PIECE, { pieceNumber: currPieceIndex });
         }
         // update UI
-        showNextPiece();
         updateScore();
         showNextPiece();
         showGrid();
