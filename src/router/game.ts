@@ -1,6 +1,6 @@
+import BaseRouter from './base';
 import { GameController } from '../controllers';
-import { AuthenticatedRequest, Response } from '../server';
-import BaseRouter from './baseRouter';
+import { TAuthenticatedRequest, TResponse } from '../server.types';
 
 class GameRouter extends BaseRouter {
     gameController: GameController;
@@ -18,15 +18,15 @@ class GameRouter extends BaseRouter {
         this.router.post('/', this.tryCatch(this.createGame.bind(this)));
     }
 
-    async find(req: AuthenticatedRequest, res: Response) {
+    async find(req: TAuthenticatedRequest, res: TResponse) {
         const games = await this.gameController.find({ owner: req.user.username });
         res.send(games);
     }
 
-    async createGame(req: AuthenticatedRequest, res: Response) {
+    async createGame(req: TAuthenticatedRequest, res: TResponse) {
         const game = await this.gameController.createGame({ owner: req.user.username });
         res.send(game);
     }
 }
 
-export { GameRouter };
+export default GameRouter;

@@ -1,7 +1,6 @@
-import { Request, Response } from 'express';
-
-import BaseRouter from './baseRouter';
+import BaseRouter from './base';
 import { AuthenticationController } from '../controllers';
+import { TRequest, TResponse } from '../server.types';
 
 class AuthenticationRouter extends BaseRouter {
     authenticationController: AuthenticationController;
@@ -19,10 +18,10 @@ class AuthenticationRouter extends BaseRouter {
         this.router.post('/signup', this.tryCatch(this.signup.bind(this)));
     }
 
-    async login(req: Request, res: Response) {
+    async login(req: TRequest, res: TResponse) {
         const { email, password }: { email: string; password: string } = req.body;
         const result = await this.authenticationController.login({ email, password });
-        
+
         if (result) {
             res.json(result);
         } else {
@@ -30,8 +29,9 @@ class AuthenticationRouter extends BaseRouter {
         }
     }
 
-    async signup(req: Request, res: Response) {
-        const { username, email, password }: { email: string; username: string; password: string } = req.body;
+    async signup(req: TRequest, res: TResponse) {
+        const { username, email, password }: { email: string; username: string; password: string } =
+            req.body;
         const result = await this.authenticationController.signup({
             username,
             email,
@@ -41,4 +41,4 @@ class AuthenticationRouter extends BaseRouter {
     }
 }
 
-export { AuthenticationRouter };
+export default AuthenticationRouter;

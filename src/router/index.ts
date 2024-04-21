@@ -1,2 +1,3 @@
-export { AuthenticationRouter } from './authenticationRouter';
-export { GameRouter } from './gameRouter';
+export { default as AuthenticationRouter } from './authentication';
+export { default as GameRouter } from './game';
+export { default as BaseRouter } from './base';

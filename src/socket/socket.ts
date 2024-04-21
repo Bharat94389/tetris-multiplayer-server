@@ -1,18 +1,15 @@
-import { Server, Socket as IoSocket } from 'socket.io';
-import { logger } from '../utils';
-import { HttpServer } from '../server';
+import { Server } from 'socket.io';
 import SocketHelper from './socketHelper';
 import { authHandler } from '../middleware';
+import { logger } from '../utils';
 import { GAME_EVENTS } from '../constants';
-
-interface ConstructorParams {
-    httpServer: HttpServer;
-}
+import { IoSocket, TSocketParams } from './scoket.types';
+import { TRequest, TResponse } from '../server.types';
 
 class Socket {
     io: Server;
 
-    constructor({ httpServer }: ConstructorParams) {
+    constructor({ httpServer }: TSocketParams) {
         this.io = new Server(httpServer, {
             cors: {
                 methods: ['GET', 'POST'],
@@ -29,7 +26,11 @@ class Socket {
             host: socket.handshake.headers.host,
         });
         const token: string = socket.handshake.auth.token;
-        authHandler({ headers: { authorization: `Bearer ${token}` } } as any, {} as any, next);
+        authHandler(
+            { headers: { authorization: `Bearer ${token}` } } as TRequest,
+            {} as TResponse,
+            next
+        );
     }
 
     async setupSocket(socket: IoSocket) {
@@ -50,5 +51,3 @@ class Socket {
 }
 
 export default Socket;
-
-export { IoSocket };

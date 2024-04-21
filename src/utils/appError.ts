@@ -1,19 +1,16 @@
-interface ConstructorParams {
-    message: string;
-    status?: number;
-    args?: Object;
-}
+import { IAppError, TAppErrorParams } from './appError.types';
 
-class AppError extends Error {
+class AppError implements IAppError {
+    name: string = 'AppError';
     message: string;
+    stack?: string;
     status: number;
-    args: Object | undefined;
+    args?: Object;
 
-    constructor({ message, status, args }: ConstructorParams) {
-        super();
-
+    constructor({ message, stack, status = 500, args }: TAppErrorParams ) {
         this.message = message;
-        this.status = status || 500;
+        this.status = status;
+        this.stack = stack;
         this.args = args;
     }
 }

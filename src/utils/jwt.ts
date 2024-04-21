@@ -1,19 +1,15 @@
 import jwt from 'jsonwebtoken';
 import AppError from './appError';
+import { IJWT, TPayload } from './jwt.types';
 
-export interface Payload {
-    email: string;
-    username: string;
-}
+class JWT implements IJWT {
+    readonly secretKey = String(process.env.SECRET_KEY);
 
-class JWT {
-    secretKey = String(process.env.SECRET_KEY);
-
-    async generate({ email, username }: Payload): Promise<string> {
+    async generate({ email, username }: TPayload): Promise<string> {
         return jwt.sign({ email, username }, this.secretKey, { expiresIn: '1d' });
     }
 
-    verify(token: string): null | Payload {
+    verify(token: string): null | TPayload {
         try {
             const payload = jwt.verify(token, this.secretKey);
             if (typeof payload === 'string') {
@@ -25,7 +21,7 @@ class JWT {
         }
     }
 
-    parse(token: string): Payload {
+    parse(token: string): TPayload {
         const payload = jwt.decode(token);
         if (!payload || typeof payload === 'string') {
             throw new AppError({ message: 'Invalid Token' });

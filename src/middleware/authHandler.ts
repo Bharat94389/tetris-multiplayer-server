@@ -1,7 +1,7 @@
 import { AppError, jwt } from '../utils';
-import { Response, NextFunction } from '../server';
+import { TNextFunction, TRequest, TResponse } from '../server.types';
 
-const authHandler = (req: any, res: Response, next: NextFunction): void => {
+const authHandler = (req: TRequest, res: TResponse, next: TNextFunction): void => {
     if (req.headers.authorization) {
         const [authType, token] = req.headers.authorization.split(' ');
 

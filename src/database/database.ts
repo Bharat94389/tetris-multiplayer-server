@@ -2,17 +2,16 @@ import { MongoClient, Db, Collection, Document, FindOptions } from 'mongodb';
 import { AppError, logger } from '../utils';
 import { databaseConfig } from './../config';
 import { COLLECTIONS } from '../constants';
-import { Game, PlayerStats, TGame, TPlayerStats, TUser, User } from './models';
+import { Game, PlayerStats, User } from './models';
+import { IGame } from './models/game.types';
+import { IUser } from './models/user.types';
+import { IPlayerStats } from './models/playerStats.types';
+import { IDatabase, TCollectionName } from './database.types';
 
-type TCollectionName =
-    | typeof COLLECTIONS.USER
-    | typeof COLLECTIONS.GAME
-    | typeof COLLECTIONS.PLAYER_STATS;
-
-class Database {
-    connectionUrl: string;
-    dbName: string;
-    options: Object;
+class Database implements IDatabase {
+    readonly connectionUrl: string;
+    readonly dbName: string;
+    readonly options: Object;
     db: Db | null;
 
     constructor({
@@ -52,16 +51,17 @@ class Database {
         }
     }
 
-    getModelFromCollectioName(collectionName: TCollectionName, data: TGame | TUser | TPlayerStats) {
+    getModelFromCollectionName(
+        collectionName: TCollectionName,
+        data: IGame | IUser | IPlayerStats
+    ): IGame | IUser | IPlayerStats {
         if (collectionName === COLLECTIONS.GAME) {
-            return new Game(data as TGame);
+            return new Game(data as IGame);
         }
         if (collectionName === COLLECTIONS.USER) {
-            return new User(data as TUser);
+            return new User(data as IUser);
         }
-        if (collectionName === COLLECTIONS.PLAYER_STATS) {
-            return new PlayerStats(data as TPlayerStats);
-        }
+        return new PlayerStats(data as IPlayerStats);
     }
 
     async create<T extends Document>(collectionName: TCollectionName, document: T) {
@@ -79,18 +79,18 @@ class Database {
         }
     }
 
-    async findOne<T extends TGame | TUser | TPlayerStats>(
+    async findOne<T extends IGame | IUser | IPlayerStats>(
         collectionName: TCollectionName,
         query: Object,
         options?: FindOptions<T>
-    ) {
+    ): Promise<IGame | IUser | IPlayerStats | null> {
         try {
             const collection = this.getCollection(collectionName);
-            const doc = await collection.findOne<T>(query, options);
+            const doc: T | null = await collection.findOne<T>(query, options);
             if (!doc) {
                 return null;
             }
-            return this.getModelFromCollectioName(collectionName, doc);
+            return this.getModelFromCollectionName(collectionName, doc);
         } catch (err: any) {
             throw new AppError({
                 message: err.message,
@@ -104,15 +104,15 @@ class Database {
         }
     }
 
-    async find<T extends TGame | TUser | TPlayerStats>(
+    async find<T extends IGame | IUser | IPlayerStats>(
         collectionName: TCollectionName,
         query: Object,
         options?: FindOptions<T>
-    ) {
+    ): Promise<(IGame | IUser | IPlayerStats)[]> {
         try {
             const collection = this.getCollection(collectionName);
             const result = await collection.find<T>(query, options).toArray();
-            return result.map((doc) => this.getModelFromCollectioName(collectionName, doc));
+            return result.map((doc) => this.getModelFromCollectionName(collectionName, doc));
         } catch (err: any) {
             throw new AppError({
                 message: err.message,
