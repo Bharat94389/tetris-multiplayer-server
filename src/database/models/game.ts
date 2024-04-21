@@ -1,28 +1,16 @@
 import { uuid } from 'uuidv4';
-import { GAME_STATUS } from '../../constants';
 import { nextNPieces } from '../../utils';
+import { GAME_STATUS } from '../../constants';
+import { IGame, TGameParams, TStatus } from './game.types';
 
-type TStatus =
-    | typeof GAME_STATUS.IN_PROGRESS
-    | typeof GAME_STATUS.COMPLETED
-    | typeof GAME_STATUS.WAITING;
-
-type TGame = {
-    gameId?: string;
-    owner: string;
-    tSequence?: string;
-    status?: TStatus;
-    createdAt?: Date;
-}
-
-class Game {
+class Game implements IGame {
     gameId: string;
     owner: string;
     tSequence: string;
     createdAt: Date;
     status: TStatus;
 
-    constructor(gameData: TGame) {
+    constructor(gameData: TGameParams) {
         this.gameId = gameData.gameId || uuid();
         this.owner = gameData.owner;
         this.tSequence = gameData.tSequence || nextNPieces(5);
@@ -31,4 +19,4 @@ class Game {
     }
 }
 
-export { TGame, Game };
+export { Game };

@@ -1,7 +1,7 @@
 import { logger } from '../utils';
-import { Request, Response, NextFunction } from '../server';
+import { TNextFunction, TRequest, TResponse } from '../server.types';
 
-const requestLogger = (req: Request, res: Response, next: NextFunction): void => {
+const requestLogger = (req: TRequest, res: TResponse, next: TNextFunction): void => {
     logger.info('Incoming Request', {
         body: req.body,
         url: req.url,

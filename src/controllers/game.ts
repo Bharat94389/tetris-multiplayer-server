@@ -1,25 +1,27 @@
 import { COLLECTIONS } from '../constants';
 import database from '../database';
-import { Game, TGame } from '../database/models';
+import { Game } from '../database/models';
+import { IGame } from '../database/models/game.types';
 import { AppError } from '../utils';
+import { IGameController, TCreateGameParams } from './game.types';
 
-class GameController {
-    async find(query: Object): Promise<TGame[]> {
+class GameController implements IGameController {
+    async find(query: Object): Promise<IGame[]> {
         try {
-            const games = (await database.find<TGame>(COLLECTIONS.GAME, query)) as Game[];
+            const games = (await database.find<IGame>(COLLECTIONS.GAME, query)) as Game[];
             return games;
         } catch (err: any) {
             throw new AppError({
                 message: err.message,
                 args: {
                     stack: err.stack,
-                    query
+                    query,
                 },
             });
-        } 
+        }
     }
 
-    async createGame({ owner }: { owner: string }): Promise<TGame> {
+    async createGame({ owner }: TCreateGameParams): Promise<IGame> {
         try {
             const game = new Game({ owner });
             await database.create(COLLECTIONS.GAME, game);
@@ -28,11 +30,11 @@ class GameController {
             throw new AppError({
                 message: err.message,
                 args: {
-                    stack: err.stack
+                    stack: err.stack,
                 },
             });
         }
     }
 }
 
-export { GameController };
+export default GameController;

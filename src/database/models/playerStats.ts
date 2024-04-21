@@ -1,14 +1,6 @@
-type TPlayerStats = {
-    username: string;
-    gameId: string;
-    gameOver?: boolean;
-    score: number;
-    numberOfPieces?: number;
-    linesCleared?: number;
-    createdAt?: Date;
-}
+import { IPlayerStats, TPlayerStatsParams } from './playerStats.types';
 
-class PlayerStats {
+class PlayerStats implements IPlayerStats {
     username: string;
     gameId: string;
     score: number;
@@ -17,7 +9,7 @@ class PlayerStats {
     linesCleared: number;
     createdAt: Date;
 
-    constructor(gameStatsData: TPlayerStats) {
+    constructor(gameStatsData: TPlayerStatsParams) {
         this.username = gameStatsData.username;
         this.gameId = gameStatsData.gameId;
         this.gameOver = gameStatsData.gameOver || false;
@@ -28,4 +20,4 @@ class PlayerStats {
     }
 }
 
-export { PlayerStats, TPlayerStats };
+export { PlayerStats };

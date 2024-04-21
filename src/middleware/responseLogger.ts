@@ -1,7 +1,7 @@
-import { Response, NextFunction } from '../server';
 import { logger } from '../utils';
+import { TNextFunction, TRequest, TResponse } from '../server.types';
 
-const responseLogger = (req: any, res: Response, next: NextFunction): void => {
+const responseLogger = (req: TRequest, res: TResponse, next: TNextFunction): void => {
     req.on('finish', () => {
         logger.info('Request Completed', {
             statusCode: res.statusCode,

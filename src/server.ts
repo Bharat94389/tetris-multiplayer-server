@@ -1,23 +1,20 @@
-import express, { Request, Response, NextFunction, Express } from 'express';
+import express from 'express';
 import http from 'http';
 import cors from 'cors';
-import { Server as HttpServer } from 'http';
 import path from 'path';
 
 import Socket from './socket';
 import { errorHandler, authHandler, requestLogger, responseLogger } from './middleware';
-import { Payload, logger } from './utils';
+import { logger } from './utils';
 import { AuthenticationRouter, GameRouter } from './router';
+import { IServer, TExpress, THttpServer } from './server.types';
+import { ISocket } from './socket/scoket.types';
 
-interface AuthenticatedRequest extends Request {
-    user: Payload;
-}
-
-class Server {
+class Server implements IServer {
     port: number;
-    app: Express;
-    httpServer: HttpServer;
-    socket: Socket;
+    app: TExpress;
+    httpServer: THttpServer;
+    socket: ISocket;
 
     constructor({ port }: { port: number }) {
         this.port = port;
@@ -51,7 +48,9 @@ class Server {
         this.app.get('/signup', (req, res) =>
             res.sendFile(path.join(__dirname, 'web', 'signup.html'))
         );
-        this.app.get('/game/:gameId', (req, res) => res.sendFile(path.join(__dirname, 'web', 'game.html')));
+        this.app.get('/game/:gameId', (req, res) =>
+            res.sendFile(path.join(__dirname, 'web', 'game.html'))
+        );
     }
 
     setApiRoutes() {
@@ -72,5 +71,3 @@ class Server {
 }
 
 export default Server;
-
-export { HttpServer, AuthenticatedRequest, Request, Response, NextFunction, Express };

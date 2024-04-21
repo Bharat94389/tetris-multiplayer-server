@@ -1,2 +1,2 @@
-export { AuthenticationController } from './authenticationController';
-export { GameController } from './gameController';
+export { default as AuthenticationController } from './authentication';
+export { default as GameController } from './game';
