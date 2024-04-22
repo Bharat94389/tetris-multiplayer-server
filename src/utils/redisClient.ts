@@ -43,7 +43,7 @@ class RedisClient implements IRedisClient {
         try {
             const keys = await this.client.keys(pattern);
             const data = await this.client.mget(keys);
-            return data.map((d) => JSON.parse(d || '')).filter(d => d);
+            return data.map((d) => JSON.parse(d || '')).filter((d) => d);
         } catch (err: any) {
             throw new AppError({ message: err.message, args: err.stack });
         }

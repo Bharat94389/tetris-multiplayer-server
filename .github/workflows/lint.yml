@@ -1,0 +1,22 @@
+name: Node.js Lint
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  lint:
+    name: Node.js Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js 20.11.1
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.11.1
+      - name: Install dependencies
+        run: yarn install || yarn install
+      - name: Lint
+        run: npm run lint

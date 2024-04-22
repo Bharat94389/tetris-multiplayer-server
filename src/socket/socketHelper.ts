@@ -7,7 +7,6 @@ import { IPlayerStats } from '../database/models/playerStats.types';
 import { IGame } from '../database/models/game.types';
 import { TUserData, IPlayerStats1 } from './socketHelper.types';
 
-
 class SocketHelper {
     socket: IoSocket;
     userData: TUserData;
@@ -38,7 +37,7 @@ class SocketHelper {
     async startGame() {
         // Update Game Status
         const gameKey = redisClient.getGameCacheKey(this.gameId);
-        let gameData: IGame | null = await redisClient.getOne(gameKey);
+        const gameData: IGame | null = await redisClient.getOne(gameKey);
         if (!gameData) {
             return;
         }
@@ -96,7 +95,7 @@ class SocketHelper {
     async nextPiece({ pieceNumber }: { pieceNumber: number }) {
         // Check for game data in redis cache
         const gameKey = redisClient.getGameCacheKey(this.gameId);
-        let gameData: IGame | null = await redisClient.getOne(gameKey);
+        const gameData: IGame | null = await redisClient.getOne(gameKey);
         if (!gameData) {
             return;
         }
@@ -148,8 +147,7 @@ class SocketHelper {
     async disconnect() {
         // Update player stats in redis cache
         const playerKey = redisClient.getPlayerCacheKey(this.gameId, this.userData.username);
-        const playerStats: IPlayerStats1 | null
-         = await redisClient.getOne(playerKey);
+        const playerStats: IPlayerStats1 | null = await redisClient.getOne(playerKey);
         if (playerStats) {
             playerStats.active = false;
             await redisClient.set(playerKey, playerStats);

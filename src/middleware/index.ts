@@ -3,9 +3,4 @@ import requestLogger from './requestLogger';
 import errorHandler from './errorHandler';
 import responseLogger from './responseLogger';
 
-export {
-    authHandler,
-    requestLogger,
-    errorHandler,
-    responseLogger,
-};
+export { authHandler, requestLogger, errorHandler, responseLogger };

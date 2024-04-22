@@ -10,7 +10,7 @@ class Logger {
         });
     }
 
-    info(message: string, args: Object | undefined = undefined): void {
+    info(message: string, args: any | undefined = undefined): void {
         if (args) {
             this.logger.info(message, args);
         } else {
