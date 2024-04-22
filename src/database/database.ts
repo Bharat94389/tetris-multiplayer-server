@@ -11,7 +11,7 @@ import { IDatabase, TCollectionName } from './database.types';
 class Database implements IDatabase {
     readonly connectionUrl: string;
     readonly dbName: string;
-    readonly options: Object;
+    readonly options: any;
     db: Db | null;
 
     constructor({
@@ -20,7 +20,7 @@ class Database implements IDatabase {
         dbName,
     }: {
         connectionUrl: string;
-        options: Object;
+        options: any;
         dbName: string;
     }) {
         this.connectionUrl = connectionUrl;
@@ -81,7 +81,7 @@ class Database implements IDatabase {
 
     async findOne<T extends IGame | IUser | IPlayerStats>(
         collectionName: TCollectionName,
-        query: Object,
+        query: any,
         options?: FindOptions<T>
     ): Promise<IGame | IUser | IPlayerStats | null> {
         try {
@@ -106,7 +106,7 @@ class Database implements IDatabase {
 
     async find<T extends IGame | IUser | IPlayerStats>(
         collectionName: TCollectionName,
-        query: Object,
+        query: any,
         options?: FindOptions<T>
     ): Promise<(IGame | IUser | IPlayerStats)[]> {
         try {

@@ -6,7 +6,7 @@ import { AppError } from '../utils';
 import { IGameController, TCreateGameParams } from './game.types';
 
 class GameController implements IGameController {
-    async find(query: Object): Promise<IGame[]> {
+    async find(query: any): Promise<IGame[]> {
         try {
             const games = (await database.find<IGame>(COLLECTIONS.GAME, query)) as Game[];
             return games;

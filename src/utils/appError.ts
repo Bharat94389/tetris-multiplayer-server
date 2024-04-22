@@ -5,9 +5,9 @@ class AppError implements IAppError {
     message: string;
     stack?: string;
     status: number;
-    args?: Object;
+    args?: any;
 
-    constructor({ message, stack, status = 500, args }: TAppErrorParams ) {
+    constructor({ message, stack, status = 500, args }: TAppErrorParams) {
         this.message = message;
         this.status = status;
         this.stack = stack;

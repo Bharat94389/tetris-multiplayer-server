@@ -9,7 +9,7 @@ type TCollectionName = (typeof COLLECTIONS)[keyof typeof COLLECTIONS];
 interface IDatabase {
     readonly connectionUrl: string;
     readonly dbName: string;
-    readonly options: Object;
+    readonly options: any;
     db: import('mongodb').Db | null;
 
     connectAsync(): Promise<void>;
@@ -21,12 +21,12 @@ interface IDatabase {
     create<T extends Document>(collectionName: TCollectionName, document: T): Promise<void>;
     findOne<T extends IGame | IUser | IPlayerStats>(
         collectionName: TCollectionName,
-        query: Object,
+        query: any,
         options?: FindOptions<T>
     ): Promise<IGame | IUser | IPlayerStats | null>;
     find<T extends IGame | IUser | IPlayerStats>(
         collectionName: TCollectionName,
-        query: Object,
+        query: any,
         options?: FindOptions<T>
     ): Promise<(IGame | IUser | IPlayerStats)[]>;
 }
