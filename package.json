@@ -3,12 +3,11 @@
     "version": "1.0.0",
     "description": "",
     "main": "src/index.ts",
-    "type": "module",
     "scripts": {
-        "start": "node node_modules/.bin/tsc && node dist/index.js",
+        "start": "node dist/index.js",
         "dev": "node node_modules/.bin/nodemon",
         "build": "node node_modules/.bin/tsc && cp -r src/web/ dist/web/",
-        "lint": "node node_modules/.bin/eslint src/**/*.ts",
+        "lint": "node node_modules/.bin/eslint --fix src/**/*.ts src/*.ts",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "author": "Bharat Thakur",
@@ -23,7 +22,8 @@
         "ioredis": "^5.3.2",
         "jsonwebtoken": "^9.0.1",
         "mongodb": "^6.5.0",
-        "socket.io": "^4.7.2",
+        "socket.io": "4.7.2",
+        "typescript": "^5.4.5",
         "uuidv4": "^6.2.13",
         "winston": "^3.10.0"
     },
@@ -45,7 +45,6 @@
         "globals": "^15.0.0",
         "nodemon": "^3.0.1",
         "prettier": "^3.0.1",
-        "ts-node": "^10.9.1",
-        "typescript": "^5.4.5"
+        "ts-node": "^10.9.1"
     }
 }
