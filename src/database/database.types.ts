@@ -1,4 +1,4 @@
-import { Collection, FindOptions } from 'mongodb';
+import { Collection, FindOptions, Document } from 'mongodb';
 import { COLLECTIONS } from '../constants';
 import { IGame } from './models/game.types';
 import { IUser } from './models/user.types';
