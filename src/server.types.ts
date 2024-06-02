@@ -7,7 +7,7 @@ import {
 } from 'express';
 import { Server as THttpServer } from 'http';
 import { TPayload } from './utils/jwt.types';
-import { ISocket } from './socket/scoket.types';
+import { ISocket } from './socket/socket.types';
 
 type TRequest = Request & {
     user?: TPayload;
