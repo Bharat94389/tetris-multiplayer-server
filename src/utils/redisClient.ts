@@ -48,6 +48,14 @@ class RedisClient implements IRedisClient {
             throw new AppError({ message: err.message, args: err.stack });
         }
     }
+
+    async delete(pattern: string) {
+        try {
+            await this.client.del(pattern);
+        } catch (err: any) {
+            throw new AppError({ message: err.message, args: err.stack });
+        }
+    }
 }
 
 export default new RedisClient(redisConfig);

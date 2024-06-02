@@ -142,6 +142,9 @@ class SocketHelper {
 
         this.socket.to(this.gameId).emit(GAME_EVENTS.GAME_OVER, playerStats);
         await database.create(COLLECTIONS.PLAYER_STATS, playerStats);
+
+        // delete the key from database
+        await redisClient.delete(playerKey);
     }
 
     async disconnect() {
