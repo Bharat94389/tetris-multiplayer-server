@@ -8,7 +8,7 @@ import { errorHandler, authHandler, requestLogger, responseLogger } from './midd
 import { logger } from './utils';
 import { AuthenticationRouter, GameRouter } from './router';
 import { IServer, TExpress, THttpServer } from './server.types';
-import { ISocket } from './socket/scoket.types';
+import { ISocket } from './socket/socket.types';
 
 class Server implements IServer {
     port: number;

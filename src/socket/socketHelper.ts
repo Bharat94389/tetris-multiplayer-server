@@ -2,7 +2,7 @@ import { jwt, logger, nextNPieces, redisClient } from '../utils';
 import { Game, PlayerStats } from '../database/models';
 import { COLLECTIONS, GAME_EVENTS, GAME_STATUS } from '../constants';
 import database from '../database';
-import { IoSocket } from './scoket.types';
+import { IoSocket } from './socket.types';
 import { IPlayerStats } from '../database/models/playerStats.types';
 import { IGame } from '../database/models/game.types';
 import { TUserData, IPlayerStats1 } from './socketHelper.types';

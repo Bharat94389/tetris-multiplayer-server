@@ -1,9 +1,10 @@
 import { Server } from 'socket.io';
+import { createAdapter } from '@socket.io/redis-adapter';
 import SocketHelper from './socketHelper';
 import { authHandler } from '../middleware';
-import { logger } from '../utils';
+import { logger, redisClient } from '../utils';
 import { GAME_EVENTS } from '../constants';
-import { IoSocket, TSocketParams } from './scoket.types';
+import { IoSocket, TSocketParams } from './socket.types';
 import { TRequest, TResponse } from '../server.types';
 
 class Socket {
@@ -14,6 +15,7 @@ class Socket {
             cors: {
                 methods: ['GET', 'POST'],
             },
+            adapter: createAdapter(redisClient.client, redisClient.client.duplicate())
         });
 
         this.io.use(this.authenticate);
