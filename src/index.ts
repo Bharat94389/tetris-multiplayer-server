@@ -1,19 +1,25 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-import { logger } from './utils';
-import database from './database';
-import Server from './server';
+// import errorHandler to log unhandled errors
+import './errorHandler';
+
+import { Server } from './server';
+import { Logger } from './utils';
+import { ServicesEnum, createContainer } from './ioc/createContainer';
+import { serverConfig } from './config';
+import { IDatabase } from './database';
 
 const main = async () => {
     try {
+        const container = createContainer();
+
+        const database: IDatabase = container[ServicesEnum.database];
         await database.connectAsync();
 
-        new Server({
-            port: Number(process.env.PORT) || 5000,
-        });
+        new Server(container, serverConfig);
     } catch (err: any) {
-        logger.error(err.message, err.stack);
+        Logger.error(err.message, err.stack);
     }
 };
 

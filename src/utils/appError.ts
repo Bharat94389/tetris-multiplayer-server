@@ -1,6 +1,6 @@
 import { IAppError, TAppErrorParams } from './appError.types';
 
-class AppError implements IAppError {
+export class AppError implements IAppError {
     name: string = 'AppError';
     message: string;
     stack?: string;
@@ -14,5 +14,3 @@ class AppError implements IAppError {
         this.args = args;
     }
 }
-
-export default AppError;

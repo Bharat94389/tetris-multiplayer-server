@@ -1,30 +1,29 @@
 import jwt from 'jsonwebtoken';
-import AppError from './appError';
-import { IJWT, TPayload } from './jwt.types';
 
-class JWT implements IJWT {
-    readonly secretKey = String(process.env.SECRET_KEY);
+type TPayload = {
+    email: string;
+    username: string;
+};
 
-    async generate({ email, username }: TPayload): Promise<string> {
+export class JWT {
+    private static readonly secretKey = String(process.env.SECRET_KEY);
+
+    static generate({ email, username }: TPayload): string {
         return jwt.sign({ email, username }, this.secretKey, { expiresIn: '1d' });
     }
 
-    verify(token: string): null | TPayload {
-        try {
-            const payload = jwt.verify(token, this.secretKey);
-            if (typeof payload === 'string') {
-                return null;
-            }
-            return { email: payload.email, username: payload.username };
-        } catch {
+    static verify(token: string): null | TPayload {
+        const payload = jwt.verify(token, this.secretKey);
+        if (!payload || typeof payload === 'string') {
             return null;
         }
+        return { email: payload.email, username: payload.username };
     }
 
-    parse(token: string): TPayload {
+    static parse(token: string): TPayload | null {
         const payload = jwt.decode(token);
         if (!payload || typeof payload === 'string') {
-            throw new AppError({ message: 'Invalid Token' });
+            return null;
         }
         return {
             email: payload.email,
@@ -32,5 +31,3 @@ class JWT implements IJWT {
         };
     }
 }
-
-export default new JWT();

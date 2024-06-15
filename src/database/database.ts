@@ -1,44 +1,28 @@
 import { MongoClient, Db, Collection, Document, FindOptions } from 'mongodb';
-import { AppError, logger } from '../utils';
-import { databaseConfig } from './../config';
+import { Logger } from '../utils';
 import { COLLECTIONS } from '../constants';
 import { Game, PlayerStats, User } from './models';
 import { IGame } from './models/game.types';
 import { IUser } from './models/user.types';
 import { IPlayerStats } from './models/playerStats.types';
 import { IDatabase, TCollectionName } from './database.types';
+import { databaseConfig } from '../config';
 
-class Database implements IDatabase {
-    readonly connectionUrl: string;
-    readonly dbName: string;
-    readonly options: any;
+export class Database implements IDatabase {
     db: Db | null;
 
-    constructor({
-        connectionUrl,
-        options,
-        dbName,
-    }: {
-        connectionUrl: string;
-        options: any;
-        dbName: string;
-    }) {
-        this.connectionUrl = connectionUrl;
-        this.dbName = dbName;
-        this.options = options;
-        this.db = null;
-    }
+    constructor(private config: typeof databaseConfig) {}
 
     async connectAsync(): Promise<void> {
-        const client: MongoClient = new MongoClient(this.connectionUrl, this.options);
+        const client: MongoClient = new MongoClient(this.config.connectionUrl, this.config.options);
         try {
-            logger.info('Connecting to client...');
+            Logger.info('Connecting to client...');
             await client.connect();
-            this.db = client.db(this.dbName);
-            logger.info('Connected to client...');
+            this.db = client.db(this.config.dbName);
+            Logger.info('Connected to client...');
         } catch (err) {
             await client.close();
-            logger.info('Closing connection to client...');
+            Logger.info('Closing connection to client...');
             throw err;
         }
     }
@@ -47,7 +31,7 @@ class Database implements IDatabase {
         if (this.db) {
             return this.db.collection<T>(collectionName);
         } else {
-            throw new AppError({ message: 'Initialize the database before accessing db' });
+            // throw new AppError({ message: 'Initialize the database before accessing db' });
         }
     }
 
@@ -65,18 +49,8 @@ class Database implements IDatabase {
     }
 
     async create<T extends Document>(collectionName: TCollectionName, document: T) {
-        try {
-            const collection = this.getCollection(collectionName);
-            await collection.insertOne(document);
-        } catch (err: any) {
-            throw new AppError({
-                message: err.message,
-                args: {
-                    collectionName,
-                    stack: err.stack,
-                },
-            });
-        }
+        const collection = this.getCollection(collectionName);
+        await collection.insertOne(document);
     }
 
     async findOne<T extends IGame | IUser | IPlayerStats>(
@@ -84,24 +58,12 @@ class Database implements IDatabase {
         query: any,
         options?: FindOptions<T>
     ): Promise<IGame | IUser | IPlayerStats | null> {
-        try {
-            const collection = this.getCollection(collectionName);
-            const doc: T | null = await collection.findOne<T>(query, options);
-            if (!doc) {
-                return null;
-            }
-            return this.getModelFromCollectionName(collectionName, doc);
-        } catch (err: any) {
-            throw new AppError({
-                message: err.message,
-                args: {
-                    collectionName,
-                    query,
-                    options,
-                    stack: err.stack,
-                },
-            });
+        const collection = this.getCollection(collectionName);
+        const doc: T | null = await collection.findOne<T>(query, options);
+        if (!doc) {
+            return null;
         }
+        return this.getModelFromCollectionName(collectionName, doc);
     }
 
     async find<T extends IGame | IUser | IPlayerStats>(
@@ -109,28 +71,8 @@ class Database implements IDatabase {
         query: any,
         options?: FindOptions<T>
     ): Promise<(IGame | IUser | IPlayerStats)[]> {
-        try {
-            const collection = this.getCollection(collectionName);
-            const result = await collection.find<T>(query, options).toArray();
-            return result.map((doc) => this.getModelFromCollectionName(collectionName, doc));
-        } catch (err: any) {
-            throw new AppError({
-                message: err.message,
-                args: {
-                    collectionName,
-                    query,
-                    options,
-                    stack: err.stack,
-                },
-            });
-        }
+        const collection = this.getCollection(collectionName);
+        const result = await collection.find<T>(query, options).toArray();
+        return result.map((doc) => this.getModelFromCollectionName(collectionName, doc));
     }
 }
-
-export default new Database({
-    connectionUrl: databaseConfig.connectionUrl,
-    options: databaseConfig.options,
-    dbName: databaseConfig.dbName,
-});
-
-export { Database };

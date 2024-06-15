@@ -1,7 +1,6 @@
-import { jwt, logger, nextNPieces, redisClient } from '../utils';
+import { jwt, Logger, nextNPieces, redisClient } from '../utils';
 import { Game, PlayerStats } from '../database/models';
 import { COLLECTIONS, GAME_EVENTS, GAME_STATUS } from '../constants';
-import database from '../database';
 import { IoSocket } from './socket.types';
 import { IPlayerStats } from '../database/models/playerStats.types';
 import { IGame } from '../database/models/game.types';
@@ -16,7 +15,7 @@ class SocketHelper {
         this.socket = socket;
         this.gameId = gameId;
         this.userData = jwt.parse(socket.handshake.auth.token);
-        logger.info(`User connected: ${this.userData.username}`);
+        Logger.info(`User connected: ${this.userData.username}`);
     }
 
     async joinGame() {
@@ -162,7 +161,7 @@ class SocketHelper {
         // Remove the player from the room
         this.socket.leave(this.gameId);
 
-        logger.info(`User disconnected: ${this.userData.username}`);
+        Logger.info(`User disconnected: ${this.userData.username}`);
     }
 }
 

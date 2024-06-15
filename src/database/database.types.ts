@@ -7,9 +7,6 @@ import { IPlayerStats } from './models/playerStats.types';
 type TCollectionName = (typeof COLLECTIONS)[keyof typeof COLLECTIONS];
 
 interface IDatabase {
-    readonly connectionUrl: string;
-    readonly dbName: string;
-    readonly options: any;
     db: import('mongodb').Db | null;
 
     connectAsync(): Promise<void>;

@@ -17,13 +17,17 @@ type TAuthenticatedRequest = Request & {
     user: TPayload;
 };
 
+type TRequestInfo = {
+    user?: TPayload;
+    params: any;
+    body: any;
+    url: string;
+};
+
 interface IServer {
-    port: number;
     app: TExpress;
     httpServer: THttpServer;
     socket: ISocket;
-
-    listen(): void;
 }
 
 export {
@@ -35,4 +39,5 @@ export {
     TRequest,
     TResponse,
     TRouter,
+    TRequestInfo,
 };

@@ -1,13 +1,13 @@
 import { Server } from 'socket.io';
-import { createAdapter } from '@socket.io/redis-adapter';
-import SocketHelper from './socketHelper';
-import { authHandler } from '../middleware';
-import { logger, redisClient } from '../utils';
-import { GAME_EVENTS } from '../constants';
+// import { createAdapter } from '@socket.io/redis-adapter';
+// import SocketHelper from './socketHelper';
+import { authHandler } from '../middlewares';
+import { Logger } from '../utils';
+// import { GAME_EVENTS } from '../constants';
 import { IoSocket, TSocketParams } from './socket.types';
 import { TRequest, TResponse } from '../server.types';
 
-class Socket {
+export class Socket {
     io: Server;
 
     constructor({ httpServer }: TSocketParams) {
@@ -15,7 +15,7 @@ class Socket {
             cors: {
                 methods: ['GET', 'POST'],
             },
-            adapter: createAdapter(redisClient.client, redisClient.client.duplicate())
+            // adapter: createAdapter(redisClient.client, redisClient.client.duplicate()),
         });
 
         this.io.use(this.authenticate);
@@ -23,7 +23,7 @@ class Socket {
     }
 
     authenticate(socket: IoSocket, next: any) {
-        logger.info('Socket Connection Requested', {
+        Logger.info('Socket Connection Requested', {
             'user-agent': socket.handshake.headers['user-agent'],
             host: socket.handshake.headers.host,
         });
@@ -40,16 +40,14 @@ class Socket {
         if (!gameId || Array.isArray(gameId)) {
             return;
         }
-        const socketHelper = new SocketHelper({ socket, gameId });
+        // const socketHelper = new SocketHelper({ socket, gameId });
 
-        await socketHelper.joinGame();
+        // await socketHelper.joinGame();
 
-        socket.on(GAME_EVENTS.START_GAME, () => socketHelper.startGame());
-        socket.on(GAME_EVENTS.GAME_OVER, () => socketHelper.gameOver());
-        socket.on(GAME_EVENTS.NEXT_PIECE, (data) => socketHelper.nextPiece(data));
-        socket.on(GAME_EVENTS.SCORE_UPDATE, (data) => socketHelper.scoreUpdate(data));
-        socket.on('disconnect', () => socketHelper.disconnect());
+        // socket.on(GAME_EVENTS.START_GAME, () => socketHelper.startGame());
+        // socket.on(GAME_EVENTS.GAME_OVER, () => socketHelper.gameOver());
+        // socket.on(GAME_EVENTS.NEXT_PIECE, (data) => socketHelper.nextPiece(data));
+        // socket.on(GAME_EVENTS.SCORE_UPDATE, (data) => socketHelper.scoreUpdate(data));
+        // socket.on('disconnect', () => socketHelper.disconnect());
     }
 }
-
-export default Socket;

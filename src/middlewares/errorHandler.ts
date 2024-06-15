@@ -1,15 +1,17 @@
-import { AppError, logger } from '../utils';
+import { Logger } from '../utils';
 import { TNextFunction, TRequest, TResponse } from '../server.types';
+import { BaseError } from '../errors';
 
 const errorHandler = (
-    error: Error | AppError,
+    error: Error,
     req: TRequest,
     res: TResponse,
     next: TNextFunction
 ): void => {
-    logger.error(error.message, error.stack);
-    if (error instanceof AppError) {
-        res.status(error.status).json({
+    Logger.error(error.message, error.stack);
+    if (error instanceof BaseError) {
+        res.status(error.statusCode).json({
+            name: error.name,
             message: error.message,
             args: error.args,
             stack: error.stack,

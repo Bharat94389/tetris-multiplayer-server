@@ -1,26 +1,16 @@
 import { createLogger, format, transports, Logger as WinstonLogger } from 'winston';
 
-class Logger {
-    logger: WinstonLogger;
+export class Logger {
+    static logger: WinstonLogger = createLogger({
+        format: format.combine(format.timestamp(), format.json({ space: 0 })),
+        transports: [new transports.Console()],
+    });
 
-    constructor() {
-        this.logger = createLogger({
-            format: format.combine(format.timestamp(), format.json({ space: 0 })),
-            transports: [new transports.Console()],
-        });
+    static info(message: string, args = {}): void {
+        this.logger.info(message, args);
     }
 
-    info(message: string, args: any | undefined = undefined): void {
-        if (args) {
-            this.logger.info(message, args);
-        } else {
-            this.logger.info(message);
-        }
-    }
-
-    error(message: string, stack: any): void {
+    static error(message: string, stack: any): void {
         this.logger.error(message, { stack });
     }
 }
-
-export default new Logger();

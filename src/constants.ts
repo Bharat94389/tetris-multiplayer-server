@@ -9,24 +9,24 @@ export const GAME_CONSTANTS = {
         O: 'o',
         I: 'i',
     },
-};
+} as const;
 
 export const CACHE = {
-    GAME: 'GAME' as const,
-    PLAYER: 'PLAYER' as const,
-};
+    GAME: 'GAME',
+    PLAYER: 'PLAYER',
+} as const;
 
 export const GAME_STATUS = {
-    IN_PROGRESS: 'IN_PROGRESS' as const,
-    COMPLETED: 'COMPLETED' as const,
-    WAITING: 'WAITING' as const,
-};
+    IN_PROGRESS: 'IN_PROGRESS',
+    COMPLETED: 'COMPLETED',
+    WAITING: 'WAITING',
+} as const;
 
 export const COLLECTIONS = {
-    USER: 'Users' as const,
-    GAME: 'Games' as const,
-    PLAYER_STATS: 'PlayerStats' as const,
-};
+    USER: 'Users',
+    GAME: 'Games',
+    PLAYER_STATS: 'PlayerStats',
+} as const;
 
 export const GAME_EVENTS = {
     START_GAME: 'START_GAME',
@@ -36,4 +36,4 @@ export const GAME_EVENTS = {
     PLAYER_JOINED: 'PLAYER_JOINED',
     PLAYER_LEFT: 'PLAYER_LEFT',
     SCORE_UPDATE: 'SCORE_UPDATE',
-};
+} as const;
