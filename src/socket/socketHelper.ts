@@ -9,14 +9,18 @@ interface IPlayerStat1 extends IPlayerStat {
 }
 
 class SocketHelper {
+    username: string;
+    gameId: string;
+
     constructor(
         private socket: IoSocket,
         private redisClient: IRedisClient,
         private gameModel: GameModel,
         private playerStatModel: PlayerStatModel,
-        private username: string,
-        private gameId: string
     ) {
+        this.username = socket.data.username;
+        this.gameId = socket.data.gameId;
+
         Logger.info(`User connected: ${this.username}`);
     }
 

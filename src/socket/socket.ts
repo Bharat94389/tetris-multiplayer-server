@@ -10,7 +10,6 @@ import { GAME_EVENTS } from '../constants';
 
 export class Socket {
     io: Server;
-    username: string;
 
     constructor(
         httpServer: HttpServer,
@@ -35,7 +34,7 @@ export class Socket {
         const token: string = socket.handshake.auth.token;
         const req = { headers: { authorization: `Bearer ${token}` } } as TRequest;
         authHandler(req, {} as TResponse, next);
-        this.username = req.user.username;
+        socket.data = req.user;
     }
 
     async setupSocket(socket: IoSocket) {
@@ -43,13 +42,12 @@ export class Socket {
         if (!gameId || Array.isArray(gameId)) {
             return;
         }
+        socket.data.gameId = gameId;
         const socketHelper = new SocketHelper(
             socket,
             this.container[ServicesEnum.redisClient],
             this.container[ServicesEnum.gameModel],
-            this.container[ServicesEnum.playerStatModel],
-            this.username,
-            gameId
+            this.container[ServicesEnum.playerStatModel]
         );
 
         await socketHelper.joinGame();
