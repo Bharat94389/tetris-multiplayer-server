@@ -1,12 +1,17 @@
-import { MongoClient, Db, Collection, Document, FindOptions } from 'mongodb';
+import { MongoClient, Db, Collection } from 'mongodb';
 import { Logger } from '../utils';
 import { COLLECTIONS } from '../constants';
-import { Game, PlayerStats, User } from './models';
-import { IGame } from './models/game.types';
-import { IUser } from './models/user.types';
-import { IPlayerStats } from './models/playerStats.types';
-import { IDatabase, TCollectionName } from './database.types';
 import { databaseConfig } from '../config';
+import { OperationalError } from '../errors/operational.error';
+
+export type TCollectionName = (typeof COLLECTIONS)[keyof typeof COLLECTIONS];
+
+export interface IDatabase {
+    db: import('mongodb').Db | null;
+
+    connectAsync(): Promise<void>;
+    getCollection(collectionName: TCollectionName): Collection;
+}
 
 export class Database implements IDatabase {
     db: Db | null;
@@ -27,52 +32,13 @@ export class Database implements IDatabase {
         }
     }
 
-    getCollection<T extends Document>(collectionName: TCollectionName): Collection<T> {
+    getCollection(collectionName: TCollectionName): Collection {
         if (this.db) {
-            return this.db.collection<T>(collectionName);
+            return this.db.collection(collectionName);
         } else {
-            // throw new AppError({ message: 'Initialize the database before accessing db' });
+            throw new OperationalError(
+                'Initialize the database before calling getCollection method'
+            );
         }
-    }
-
-    getModelFromCollectionName(
-        collectionName: TCollectionName,
-        data: IGame | IUser | IPlayerStats
-    ): IGame | IUser | IPlayerStats {
-        if (collectionName === COLLECTIONS.GAME) {
-            return new Game(data as IGame);
-        }
-        if (collectionName === COLLECTIONS.USER) {
-            return new User(data as IUser);
-        }
-        return new PlayerStats(data as IPlayerStats);
-    }
-
-    async create<T extends Document>(collectionName: TCollectionName, document: T) {
-        const collection = this.getCollection(collectionName);
-        await collection.insertOne(document);
-    }
-
-    async findOne<T extends IGame | IUser | IPlayerStats>(
-        collectionName: TCollectionName,
-        query: any,
-        options?: FindOptions<T>
-    ): Promise<IGame | IUser | IPlayerStats | null> {
-        const collection = this.getCollection(collectionName);
-        const doc: T | null = await collection.findOne<T>(query, options);
-        if (!doc) {
-            return null;
-        }
-        return this.getModelFromCollectionName(collectionName, doc);
-    }
-
-    async find<T extends IGame | IUser | IPlayerStats>(
-        collectionName: TCollectionName,
-        query: any,
-        options?: FindOptions<T>
-    ): Promise<(IGame | IUser | IPlayerStats)[]> {
-        const collection = this.getCollection(collectionName);
-        const result = await collection.find<T>(query, options).toArray();
-        return result.map((doc) => this.getModelFromCollectionName(collectionName, doc));
     }
 }

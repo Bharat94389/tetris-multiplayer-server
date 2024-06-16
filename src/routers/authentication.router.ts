@@ -1,6 +1,7 @@
 import { BaseRouter } from './base.router';
 import { IAuthenticationController } from '../controllers';
 import { TNextFunction, TRequest, TResponse } from 'server.types';
+import { HTTP_STATUS_CODES } from '../constants';
 
 export class AuthenticationRouter extends BaseRouter {
     constructor(private authenticationController: IAuthenticationController) {
@@ -14,23 +15,23 @@ export class AuthenticationRouter extends BaseRouter {
         this.router.post('/signup', this.signup.bind(this));
     }
 
-    login(req: TRequest, res: TResponse, next: TNextFunction) {
+    async login(req: TRequest, res: TResponse, next: TNextFunction) {
         try {
             const requestInfo = this.getRequestInfo(req);
-            const results = this.authenticationController.login(requestInfo);
+            const results = await this.authenticationController.login(requestInfo);
 
-            res.status(200).json(results);
+            res.json(results);
         } catch (err) {
             next(err);
         }
     }
 
-    signup(req: TRequest, res: TResponse, next: TNextFunction) {
+    async signup(req: TRequest, res: TResponse, next: TNextFunction) {
         try {
             const requestInfo = this.getRequestInfo(req);
-            const results = this.authenticationController.signup(requestInfo);
+            await this.authenticationController.signup(requestInfo);
 
-            res.status(201).json(results);
+            res.status(HTTP_STATUS_CODES.CREATED).json();
         } catch (err) {
             next(err);
         }

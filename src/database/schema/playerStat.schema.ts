@@ -1,6 +1,14 @@
-import { IPlayerStats, TPlayerStatsParams } from './playerStats.types';
+export interface IPlayerStat {
+    username: string;
+    gameId: string;
+    gameOver?: boolean;
+    score?: number;
+    numberOfPieces?: number;
+    linesCleared?: number;
+    createdAt?: Date;
+}
 
-class PlayerStats implements IPlayerStats {
+export class PlayerStat implements IPlayerStat {
     username: string;
     gameId: string;
     score: number;
@@ -9,7 +17,7 @@ class PlayerStats implements IPlayerStats {
     linesCleared: number;
     createdAt: Date;
 
-    constructor(gameStatsData: TPlayerStatsParams) {
+    constructor(gameStatsData: IPlayerStat) {
         this.username = gameStatsData.username;
         this.gameId = gameStatsData.gameId;
         this.gameOver = gameStatsData.gameOver || false;
@@ -19,5 +27,3 @@ class PlayerStats implements IPlayerStats {
         this.createdAt = gameStatsData.createdAt || new Date();
     }
 }
-
-export { PlayerStats };

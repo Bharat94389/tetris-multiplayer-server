@@ -1,6 +1,7 @@
 import { BaseRouter } from './base.router';
 import { IGameController } from '../controllers';
 import { TNextFunction, TRequest, TResponse } from '../server.types';
+import { HTTP_STATUS_CODES } from '../constants';
 
 export class GameRouter extends BaseRouter {
     constructor(private gameController: IGameController) {
@@ -14,10 +15,10 @@ export class GameRouter extends BaseRouter {
         this.router.post('/', this.createGame.bind(this));
     }
 
-    find(req: TRequest, res: TResponse, next: TNextFunction) {
+    async find(req: TRequest, res: TResponse, next: TNextFunction) {
         try {
             const requestInfo = this.getRequestInfo(req);
-            const results = this.gameController.find(requestInfo);
+            const results = await this.gameController.find(requestInfo);
 
             res.json(results);
         } catch (err) {
@@ -25,12 +26,12 @@ export class GameRouter extends BaseRouter {
         }
     }
 
-    createGame(req: TRequest, res: TResponse, next: TNextFunction) {
+    async createGame(req: TRequest, res: TResponse, next: TNextFunction) {
         try {
             const requestInfo = this.getRequestInfo(req);
-            const results = this.gameController.createGame(requestInfo);
+            const results = await this.gameController.createGame(requestInfo);
 
-            res.status(201).json(results);
+            res.status(HTTP_STATUS_CODES.CREATED).json(results);
         } catch (err) {
             next(err);
         }

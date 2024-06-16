@@ -12,6 +12,7 @@ const authHandler = (req: TRequest, res: TResponse, next: TNextFunction): void =
                 req.user = userData;
                 return next();
             }
+            return next(new UnauthorizedError('Invalid authorization token provided'));
         }
     }
 

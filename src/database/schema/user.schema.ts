@@ -1,5 +1,14 @@
-import bcrypt from 'bcrypt';
-import { IUser, TUserParams } from './user.types';
+export interface IUser {
+    username: string;
+    email: string;
+    password: string;
+    isVerified?: boolean;
+    createdAt?: Date;
+    meta?: {
+        versionId: number;
+        lastUpdated: Date;
+    };
+}
 
 export class User implements IUser {
     username: string;
@@ -12,7 +21,7 @@ export class User implements IUser {
         lastUpdated: Date;
     };
 
-    constructor(userData: TUserParams) {
+    constructor(userData: IUser) {
         this.username = userData.username;
         this.email = userData.email;
         this.password = userData.password;
@@ -25,13 +34,5 @@ export class User implements IUser {
         if (userData.meta) {
             this.meta.versionId = userData.meta.versionId + 1;
         }
-    }
-
-    encryptPassword() {
-        this.password = bcrypt.hashSync(this.password, bcrypt.genSaltSync(8));
-    }
-
-    comparePassword(password: string): boolean {
-        return bcrypt.compareSync(password, this.password);
     }
 }

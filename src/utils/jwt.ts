@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 
-type TPayload = {
+export type TPayload = {
     email: string;
     username: string;
 };
@@ -13,11 +13,16 @@ export class JWT {
     }
 
     static verify(token: string): null | TPayload {
-        const payload = jwt.verify(token, this.secretKey);
-        if (!payload || typeof payload === 'string') {
+        try {
+            const payload = jwt.verify(token, this.secretKey);
+            if (!payload || typeof payload === 'string') {
+                return null;
+            }
+            return { email: payload.email, username: payload.username };
+        } catch (err) {
+            // if error that means token is invalid so return null
             return null;
         }
-        return { email: payload.email, username: payload.username };
     }
 
     static parse(token: string): TPayload | null {

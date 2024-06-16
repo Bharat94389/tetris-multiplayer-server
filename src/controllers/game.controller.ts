@@ -1,7 +1,5 @@
-import { IDatabase } from 'database';
-import { COLLECTIONS } from '../constants';
-import { Game } from '../database/models';
-import { IGame } from '../database/models/game.types';
+import { IGame } from '../database/schema';
+import { GameModel } from '../database/models';
 import { TRequestInfo } from 'server.types';
 
 export interface IGameController {
@@ -10,7 +8,7 @@ export interface IGameController {
 }
 
 export class GameController implements IGameController {
-    constructor(private database: IDatabase) {}
+    constructor(private gameModel: GameModel) {}
 
     async find(requestInfo: TRequestInfo): Promise<IGame[]> {
         const { username } = requestInfo.user;
@@ -19,15 +17,13 @@ export class GameController implements IGameController {
         // only return the games that the owner has created
         const query = { owner: username };
 
-        const games = (await this.database.find<IGame>(COLLECTIONS.GAME, query)) as Game[];
+        const games = await this.gameModel.find(query);
         return games;
     }
 
     async createGame(requestInfo: TRequestInfo): Promise<IGame> {
         const { username } = requestInfo.user;
 
-        const game = new Game({ owner: username });
-        await this.database.create(COLLECTIONS.GAME, game);
-        return game;
+        return await this.gameModel.create({ owner: username });
     }
 }

@@ -1,1 +1,1 @@
-export { IDatabase } from './database.types';
+export { IDatabase } from './database';

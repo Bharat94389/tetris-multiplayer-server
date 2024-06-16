@@ -1,25 +1,30 @@
-import { Server } from 'socket.io';
-// import { createAdapter } from '@socket.io/redis-adapter';
-// import SocketHelper from './socketHelper';
+import { Server, Socket as IoSocket } from 'socket.io';
+import { Server as HttpServer } from 'http';
+import SocketHelper from './socketHelper';
 import { authHandler } from '../middlewares';
-import { Logger } from '../utils';
-// import { GAME_EVENTS } from '../constants';
-import { IoSocket, TSocketParams } from './socket.types';
 import { TRequest, TResponse } from '../server.types';
+import { IocContainer } from '../ioc/iocContainer';
+import { ServicesEnum } from '../ioc/createContainer';
+import { Logger } from '../utils';
+import { GAME_EVENTS } from '../constants';
 
 export class Socket {
     io: Server;
+    username: string;
 
-    constructor({ httpServer }: TSocketParams) {
+    constructor(
+        httpServer: HttpServer,
+        private container: IocContainer
+    ) {
         this.io = new Server(httpServer, {
             cors: {
                 methods: ['GET', 'POST'],
             },
-            // adapter: createAdapter(redisClient.client, redisClient.client.duplicate()),
+            adapter: this.container[ServicesEnum.redisClient].createSocketAdapter(),
         });
 
-        this.io.use(this.authenticate);
-        this.io.on('connection', this.setupSocket);
+        this.io.use(this.authenticate.bind(this));
+        this.io.on('connection', this.setupSocket.bind(this));
     }
 
     authenticate(socket: IoSocket, next: any) {
@@ -28,11 +33,9 @@ export class Socket {
             host: socket.handshake.headers.host,
         });
         const token: string = socket.handshake.auth.token;
-        authHandler(
-            { headers: { authorization: `Bearer ${token}` } } as TRequest,
-            {} as TResponse,
-            next
-        );
+        const req = { headers: { authorization: `Bearer ${token}` } } as TRequest;
+        authHandler(req, {} as TResponse, next);
+        this.username = req.user.username;
     }
 
     async setupSocket(socket: IoSocket) {
@@ -40,14 +43,22 @@ export class Socket {
         if (!gameId || Array.isArray(gameId)) {
             return;
         }
-        // const socketHelper = new SocketHelper({ socket, gameId });
+        const socketHelper = new SocketHelper(
+            socket,
+            this.container[ServicesEnum.redisClient],
+            this.container[ServicesEnum.gameModel],
+            this.container[ServicesEnum.playerStatModel],
+            this.username,
+            gameId
+        );
 
-        // await socketHelper.joinGame();
+        await socketHelper.joinGame();
 
-        // socket.on(GAME_EVENTS.START_GAME, () => socketHelper.startGame());
-        // socket.on(GAME_EVENTS.GAME_OVER, () => socketHelper.gameOver());
-        // socket.on(GAME_EVENTS.NEXT_PIECE, (data) => socketHelper.nextPiece(data));
-        // socket.on(GAME_EVENTS.SCORE_UPDATE, (data) => socketHelper.scoreUpdate(data));
-        // socket.on('disconnect', () => socketHelper.disconnect());
+        socket.on(GAME_EVENTS.START_GAME, () => socketHelper.startGame());
+        socket.on(GAME_EVENTS.GAME_OVER, () => socketHelper.gameOver());
+        socket.on(GAME_EVENTS.NEXT_PIECE, (data) => socketHelper.nextPiece(data));
+        socket.on(GAME_EVENTS.SCORE_UPDATE, (data) => socketHelper.scoreUpdate(data));
+
+        socket.on('disconnect', () => socketHelper.disconnect());
     }
 }

@@ -1,22 +1,27 @@
 import { Redis } from 'ioredis';
+import { RedisAdapter, createAdapter } from '@socket.io/redis-adapter';
 import { CACHE } from '../constants';
-import { redisConfig } from 'config';
+import { redisConfig } from '../config';
 
 export interface IRedisClient {
-    client: Redis;
-
+    createSocketAdapter(): (nsp: any) => RedisAdapter;
     getGameCacheKey(gameId: string): string;
     getPlayerCacheKey(gameId: string, username: string): string;
     set<T>(key: string, data: T): Promise<void>;
     getOne<T>(key: string): Promise<T | null>;
     getMany<T>(pattern: string): Promise<T[]>;
+    delete(pattern: string): Promise<void>;
 }
 
 export class RedisClient implements IRedisClient {
-    client: Redis;
+    private client: Redis;
 
     constructor(config: typeof redisConfig) {
         this.client = new Redis(config);
+    }
+
+    createSocketAdapter() {
+        return createAdapter(this.client, this.client.duplicate());
     }
 
     getGameCacheKey(gameId: string) {

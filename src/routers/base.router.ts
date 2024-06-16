@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import { TRequest, TRequestInfo, TRouter } from '../server.types';
+import { TRequest, TRequestInfo } from '../server.types';
 
 export abstract class BaseRouter {
-    protected router: TRouter;
+    protected router: Router;
 
     constructor() {
         this.router = Router();

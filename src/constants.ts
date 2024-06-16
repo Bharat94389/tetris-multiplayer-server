@@ -37,3 +37,11 @@ export const GAME_EVENTS = {
     PLAYER_LEFT: 'PLAYER_LEFT',
     SCORE_UPDATE: 'SCORE_UPDATE',
 } as const;
+
+export const HTTP_STATUS_CODES = {
+    OK: 200,
+    CREATED: 201,
+    UNAUTHORIZED: 401,
+    BAD_REQUEST: 400,
+    UNEXPECTED: 500
+} as const;

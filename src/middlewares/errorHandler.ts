@@ -14,7 +14,6 @@ const errorHandler = (
             name: error.name,
             message: error.message,
             args: error.args,
-            stack: error.stack,
         });
     } else {
         res.status(500).json({ message: error.message, stack: error.stack });

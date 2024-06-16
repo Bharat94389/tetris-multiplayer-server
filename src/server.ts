@@ -1,21 +1,19 @@
-import express from 'express';
-import http from 'http';
+import express, { Express } from 'express';
+import http, { Server as HttpServer } from 'http';
 import cors from 'cors';
 import path from 'path';
 
 import Socket from './socket';
 import { errorHandler, authHandler, requestLogger, responseLogger } from './middlewares';
 import { Logger } from './utils';
-import { IServer, TExpress, THttpServer } from './server.types';
-import { ISocket } from './socket/socket.types';
 import { IocContainer } from './ioc/iocContainer';
 import { serverConfig } from './config';
 import { ServicesEnum } from './ioc/createContainer';
 
-export class Server implements IServer {
-    app: TExpress;
-    httpServer: THttpServer;
-    socket: ISocket;
+export class Server {
+    app: Express;
+    httpServer: HttpServer;
+    socket: Socket;
 
     constructor(
         private container: IocContainer,
@@ -29,11 +27,11 @@ export class Server implements IServer {
         this.setMiddleware();
         this.setUIRoutes();
         this.setApiRoutes();
-        this.setPostRequestHandlers();
 
         this.httpServer = http.createServer(this.app);
-        this.socket = new Socket({ httpServer: this.httpServer });
+        this.socket = new Socket(this.httpServer, this.container);
 
+        this.setPostRequestHandlers();
         this.listen();
     }
 
