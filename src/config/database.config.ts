@@ -1,4 +1,4 @@
-const databaseConfig = {
+export const databaseConfig = {
     options: {
         appName: 'tetris-multiplayer',
         minPoolSize: 2,
@@ -6,5 +6,3 @@ const databaseConfig = {
     dbName: 'tetris-multiplayer',
     connectionUrl: String(process.env.CONNECTION_URL),
 };
-
-export default databaseConfig;

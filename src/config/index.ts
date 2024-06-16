@@ -1,2 +1,3 @@
-export { default as databaseConfig } from './databaseConfig';
-export { default as redisConfig } from './redisConfig';
+export { databaseConfig } from './database.config';
+export { redisConfig } from './redis.config';
+export { serverConfig } from './server.config';

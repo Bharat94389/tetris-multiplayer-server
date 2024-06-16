@@ -1,3 +1,4 @@
-export { User } from './user';
-export { Game } from './game';
-export { PlayerStats } from './playerStats';
+export { BaseModel } from './base.model';
+export { GameModel } from './game.model';
+export { PlayerStatModel } from './playerStat.model';
+export { UserModel } from './user.model';

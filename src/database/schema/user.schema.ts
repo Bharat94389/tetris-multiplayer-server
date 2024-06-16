@@ -1,9 +1,16 @@
-import bcrypt from 'bcrypt';
-import { validate } from 'email-validator';
-import { AppError } from '../../utils';
-import { IUser, TUserParams } from './user.types';
+export interface IUser {
+    username: string;
+    email: string;
+    password: string;
+    isVerified?: boolean;
+    createdAt?: Date;
+    meta?: {
+        versionId: number;
+        lastUpdated: Date;
+    };
+}
 
-class User implements IUser {
+export class User implements IUser {
     username: string;
     email: string;
     password: string;
@@ -14,11 +21,8 @@ class User implements IUser {
         lastUpdated: Date;
     };
 
-    constructor(userData: TUserParams) {
+    constructor(userData: IUser) {
         this.username = userData.username;
-        if (!validate(userData.email)) {
-            throw new AppError({ message: 'Invalid Email', status: 400 });
-        }
         this.email = userData.email;
         this.password = userData.password;
         this.isVerified = Boolean(userData.isVerified);
@@ -31,14 +35,4 @@ class User implements IUser {
             this.meta.versionId = userData.meta.versionId + 1;
         }
     }
-
-    encryptPassword() {
-        this.password = bcrypt.hashSync(this.password, bcrypt.genSaltSync(8));
-    }
-
-    comparePassword(password: string): boolean {
-        return bcrypt.compareSync(password, this.password);
-    }
 }
-
-export { User };
