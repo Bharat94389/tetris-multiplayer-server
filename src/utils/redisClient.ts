@@ -18,11 +18,13 @@ export class RedisClient implements IRedisClient {
     private client: Redis;
 
     constructor(config: typeof redisConfig) {
-        this.client = new Redis(config);
+        const client = new Redis(config);
 
-        this.client.on('error', (err) => {
+        client.on('error', (err) => {
             Logger.info('error in redis: ', err);
         });
+
+        this.client = client;
     }
 
     createSocketAdapter() {
