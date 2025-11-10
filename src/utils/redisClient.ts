@@ -2,6 +2,7 @@ import { Redis } from 'ioredis';
 import { RedisAdapter, createAdapter } from '@socket.io/redis-adapter';
 import { CACHE } from '../constants';
 import { redisConfig } from '../config';
+import { Logger } from './logger';
 
 export interface IRedisClient {
     createSocketAdapter(): (nsp: any) => RedisAdapter;
@@ -18,6 +19,10 @@ export class RedisClient implements IRedisClient {
 
     constructor(config: typeof redisConfig) {
         this.client = new Redis(config);
+
+        this.client.on('error', (err) => {
+            Logger.info('error in redis: ', err);
+        });
     }
 
     createSocketAdapter() {
