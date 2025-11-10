@@ -30,6 +30,10 @@ class SocketHelper {
 
         // Get data for the player
         const gameData = await this.getGameData();
+        if (!gameData) {
+            // handle no game with id exists error
+            return;
+        }
         const playerStats = await this.getPlayerStats();
         const playersKey = this.redisClient.getPlayerCacheKey(this.gameId, '*');
         const currentPlayers: IPlayerStat1[] = await this.redisClient.getMany(playersKey);
@@ -67,6 +71,9 @@ class SocketHelper {
 
         // Fetch the game data from database if gamedata is not found
         gameData = await this.gameModel.findOne({ gameId: this.gameId });
+        if (!gameData) {
+            return null;
+        }
         // Update redis cache
         this.redisClient.set(gameKey, gameData);
         return gameData;
@@ -90,7 +97,6 @@ class SocketHelper {
         const newPlayerStat: IPlayerStat1 = await this.playerStatModel.create({
             gameId: this.gameId,
             username,
-            score: 0,
         });
         newPlayerStat.active = true;
         await this.redisClient.set(playerKey, newPlayerStat);
