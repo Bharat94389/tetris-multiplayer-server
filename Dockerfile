@@ -1,4 +1,4 @@
-FROM node:20.13.1-bookworm-slim as dev
+FROM node:lts-trixie as dev
 
 WORKDIR /app
 
