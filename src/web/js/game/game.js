@@ -28,6 +28,8 @@ const game = {
     lines: 0,
     level: 0,
     dropTimer: 0,
+    // rows moved by the current soft drop, scored when the piece locks
+    softDropRows: 0,
     awaitingPiece: false,
     requestingPieces: false,
     lastFrame: 0,
@@ -241,21 +243,23 @@ const rotatePiece = (clockwise) => {
     }
 };
 
+// As in classic Tetris, soft dropping a piece that has landed locks it straight away
 const softDrop = () => {
     if (movePiece(0, 1)) {
-        game.score += TETRIS_SOFT_DROP_POINTS;
+        game.softDropRows++;
         game.dropTimer = 0;
-        updateStats();
+    } else {
+        lockPiece();
     }
 };
 
+// Classic Tetris has no hard drop, so it is kept as a shortcut that scores no points
 const hardDrop = () => {
     if (!game.piece) {
         return;
     }
-    const dropY = getDropY(game.grid, game.piece);
-    game.score += (dropY - game.piece.y) * TETRIS_HARD_DROP_POINTS;
-    game.piece.y = dropY;
+    game.softDropRows = 0;
+    game.piece.y = getDropY(game.grid, game.piece);
     lockPiece();
 };
 
@@ -263,17 +267,22 @@ const lockPiece = () => {
     mergePiece(game.grid, game.piece);
     game.piece = null;
 
+    // as in classic Tetris, 1 point for each row the piece was soft dropped without letting go
+    game.score += game.softDropRows;
+    game.softDropRows = 0;
+    // down has to be pressed again for the next piece
+    heldActions.delete('down');
+
     const cleared = clearLines(game.grid);
     if (cleared) {
-        game.score += getLinePoints(game.level, cleared);
         game.lines += cleared;
         const level = getLevel(game.lines);
-        if (level > game.level) {
-            showToast(`Level ${level}!`);
-        } else {
-            showToast(`${TETRIS_LINE_NAMES[cleared]} +${getLinePoints(game.level, cleared)}`);
-        }
+        const levelUp = level > game.level;
+        // as in classic Tetris, the clear that reaches a new level is scored at the new level
         game.level = level;
+        const points = getLinePoints(game.level, cleared);
+        game.score += points;
+        showToast(levelUp ? `Level ${level}!` : `${TETRIS_LINE_NAMES[cleared]} +${points}`);
     }
 
     game.pieceIndex++;
@@ -531,7 +540,13 @@ const pressAction = (action) => {
     performAction(action);
 };
 
-const releaseAction = (action) => heldActions.delete(action);
+const releaseAction = (action) => {
+    heldActions.delete(action);
+    if (action === 'down') {
+        // letting go of soft drop resets its points
+        game.softDropRows = 0;
+    }
+};
 
 const updateHeldActions = (dt) => {
     heldActions.forEach((held, action) => {
@@ -613,8 +628,10 @@ const frame = (time) => {
     if (game.state === PLAY_STATE.PLAYING && game.piece) {
         updateHeldActions(dt);
         game.dropTimer += dt;
-        if (game.piece && game.dropTimer >= getDelay(game.level)) {
-            game.dropTimer = 0;
+        const delay = getDelay(game.level);
+        if (game.piece && game.dropTimer >= delay) {
+            // keep the leftover time so the fall speed matches the gravity table
+            game.dropTimer = Math.min(game.dropTimer - delay, delay);
             gravityStep();
         }
     }

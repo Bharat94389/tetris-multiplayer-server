@@ -78,18 +78,12 @@ const clearLines = (grid) => {
     return cleared;
 };
 
-const getLevel = (linesCleared) => {
-    let level = 0;
-    while (level < TETRIS_MAX_LEVEL && TETRIS_LINES_CLEAR_TO_NEXT_LEVEL[level] <= linesCleared) {
-        level++;
-    }
-    return level;
-};
+const getLevel = (linesCleared) => Math.floor(linesCleared / TETRIS_LINES_PER_LEVEL);
 
-const getDelay = (level) => TETRIS_DELAY[Math.min(level, TETRIS_MAX_LEVEL)];
+const getDelay = (level) =>
+    TETRIS_GRAVITY_FRAMES[Math.min(level, TETRIS_GRAVITY_FRAMES.length - 1)] * TETRIS_FRAME_MS;
 
-const getLinePoints = (level, lines) =>
-    TETRIS_POINTS[Math.min(level, TETRIS_MAX_LEVEL)][Math.min(lines, 4)] || 0;
+const getLinePoints = (level, lines) => (TETRIS_LINE_POINTS[Math.min(lines, 4)] || 0) * (level + 1);
 
 // Shape without its empty rows / columns, used for the preview
 const trimShape = (shape) => {

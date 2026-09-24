@@ -67,100 +67,31 @@ const TETRIS_KICKS = [
     [2, 0],
 ];
 
-const TETRIS_DELAY = {
-    0: 1000,
-    1: 900,
-    2: 800,
-    3: 700,
-    4: 600,
-    5: 500,
-    6: 400,
-    7: 300,
-    8: 200,
-    9: 100,
+// Classic (NES) Tetris rules
+
+// NES frames run at 60.0988 fps
+const TETRIS_FRAME_MS = 1000 / 60.0988;
+
+// Frames a piece takes to fall one row at each level, levels past the end use the last value
+// prettier-ignore
+const TETRIS_GRAVITY_FRAMES = [
+    48, 43, 38, 33, 28, 23, 18, 13, 8, 6, // levels 0 - 9
+    5, 5, 5, // levels 10 - 12
+    4, 4, 4, // levels 13 - 15
+    3, 3, 3, // levels 16 - 18
+    2, 2, 2, 2, 2, 2, 2, 2, 2, 2, // levels 19 - 28
+    1, // level 29+
+];
+
+// Points for clearing 1 - 4 lines at once, multiplied by (level + 1)
+const TETRIS_LINE_POINTS = {
+    1: 40,
+    2: 100,
+    3: 300,
+    4: 1200,
 };
 
-const TETRIS_MAX_LEVEL = 9;
-
-const TETRIS_POINTS = {
-    0: {
-        1: 40,
-        2: 100,
-        3: 300,
-        4: 800,
-    },
-    1: {
-        1: 40,
-        2: 100,
-        3: 300,
-        4: 800,
-    },
-    2: {
-        1: 40,
-        2: 100,
-        3: 300,
-        4: 800,
-    },
-    3: {
-        1: 40,
-        2: 100,
-        3: 300,
-        4: 800,
-    },
-    4: {
-        1: 40,
-        2: 100,
-        3: 300,
-        4: 800,
-    },
-    5: {
-        1: 50,
-        2: 120,
-        3: 350,
-        4: 900,
-    },
-    6: {
-        1: 60,
-        2: 140,
-        3: 400,
-        4: 1000,
-    },
-    7: {
-        1: 70,
-        2: 160,
-        3: 450,
-        4: 1100,
-    },
-    8: {
-        1: 80,
-        2: 180,
-        3: 500,
-        4: 1200,
-    },
-    9: {
-        1: 90,
-        2: 200,
-        3: 550,
-        4: 1300,
-    },
-};
-
-// Total lines cleared needed to leave a level
-const TETRIS_LINES_CLEAR_TO_NEXT_LEVEL = {
-    0: 10,
-    1: 20,
-    2: 30,
-    3: 40,
-    4: 50,
-    5: 60,
-    6: 70,
-    7: 80,
-    8: 90,
-    9: 100,
-};
-
-const TETRIS_SOFT_DROP_POINTS = 1;
-const TETRIS_HARD_DROP_POINTS = 2;
+const TETRIS_LINES_PER_LEVEL = 10;
 
 const TETRIS_LINE_NAMES = {
     1: 'Single',
@@ -172,11 +103,11 @@ const TETRIS_LINE_NAMES = {
 // Number of upcoming pieces shown in the preview
 const TETRIS_PREVIEW_COUNT = 3;
 
-// Held key timings (ms): delay before auto repeat, repeat rate, soft drop rate
+// Held key timings (ms): delay before auto repeat, repeat rate, soft drop rate (NES: 1 row / 2 frames)
 const TETRIS_INPUT = {
     DAS: 160,
     ARR: 45,
-    SOFT_DROP: 40,
+    SOFT_DROP: 2 * TETRIS_FRAME_MS,
 };
 
 const TETRIS_START_COUNTDOWN = 3;
