@@ -38,14 +38,6 @@ export class Server {
 
     setMiddleware() {
         this.app.use(cors());
-        this.app.use(
-            rateLimit({
-                windowMs: 15 * 60 * 1000, // 15 minutes
-                limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes).
-                standardHeaders: 'draft-7', // draft-6: `RateLimit-*` headers; draft-7: combined `RateLimit` header
-                legacyHeaders: false, // Disable the `X-RateLimit-*` headers.
-            })
-        );
         this.app.use(express.json());
 
         this.app.use(requestLogger);
@@ -68,6 +60,16 @@ export class Server {
     }
 
     setApiRoutes() {
+        // Only rate limit the API, static files (html, css, js) should not use up the limit
+        this.app.use(
+            '/api',
+            rateLimit({
+                windowMs: 15 * 60 * 1000, // 15 minutes
+                limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes).
+                standardHeaders: 'draft-7', // draft-6: `RateLimit-*` headers; draft-7: combined `RateLimit` header
+                legacyHeaders: false, // Disable the `X-RateLimit-*` headers.
+            })
+        );
         this.app.use('/api', this.container[ServicesEnum.authenticationRouter].getRouter());
         this.app.use('/api', authHandler);
         this.app.use('/api/game', this.container[ServicesEnum.gameRouter].getRouter());

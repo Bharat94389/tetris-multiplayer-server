@@ -45,7 +45,11 @@ export abstract class BaseModel<T> {
             .toArray();
     }
 
-    async update(filter: any, data: T, options: UpdateOptions = {}): Promise<UpdateResult<T>> {
+    async update(
+        filter: any,
+        data: Partial<T>,
+        options: UpdateOptions = {}
+    ): Promise<UpdateResult<T>> {
         // delete _id field as it is immutable
         delete data['_id'];
         return await this.database

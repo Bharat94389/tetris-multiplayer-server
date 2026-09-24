@@ -4,17 +4,63 @@
         <meta charset="UTF-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Multiplayer Tetris</title>
-        <script src="/js/auth.js"></script>
+        <title>Lobby · Multiplayer Tetris</title>
         <link rel="icon" href="data:;base64,iVBORw0KGgo=" />
+        <link rel="stylesheet" href="/css/main.css" />
+        <script src="/js/auth.js" data-require-auth></script>
     </head>
     <body>
-        <h2 id="welcome"></h2>
-        <button id="newGame">New Game</button>
-        <h3>History:</h3>
-        <div id="historyContainer"></div>
+        <header class="topbar">
+            <a href="/" class="brand"
+                ><span class="brand-blocks"><i></i><i></i><i></i><i></i></span>TETRIS
+                <small>Multiplayer</small></a
+            >
+            <div class="topbar-actions">
+                <span class="muted" id="topbarUser"></span>
+                <button class="btn btn-ghost btn-sm" id="logoutButton">Log out</button>
+            </div>
+        </header>
 
-        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <main class="lobby">
+            <section class="lobby-hero">
+                <h1 id="welcome">Welcome</h1>
+                <p class="muted">
+                    Start a new game and invite friends, or join a game with its link.
+                </p>
+            </section>
+
+            <div id="lobbyError" class="alert alert-error hidden" role="alert"></div>
+
+            <section class="lobby-actions">
+                <div class="card">
+                    <h2 class="card-title">New game</h2>
+                    <p>Create a room, share the invite link, and start when everyone is in.</p>
+                    <button class="btn btn-primary" id="newGame">Create game</button>
+                </div>
+                <div class="card">
+                    <h2 class="card-title">Join game</h2>
+                    <p>Paste a game link or game ID you got from a friend.</p>
+                    <form class="join-form" id="joinForm">
+                        <input
+                            class="input mono"
+                            id="joinInput"
+                            placeholder="Game link or ID"
+                            aria-label="Game link or ID"
+                            autocomplete="off"
+                        />
+                        <button class="btn" type="submit">Join</button>
+                    </form>
+                </div>
+            </section>
+
+            <section class="card">
+                <h2 class="card-title">Your games</h2>
+                <ul class="history-list" id="historyList">
+                    <li class="empty-state">Loading…</li>
+                </ul>
+            </section>
+        </main>
+
         <script src="/js/home.js"></script>
     </body>
 </html>

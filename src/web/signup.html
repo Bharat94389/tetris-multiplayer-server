@@ -4,36 +4,108 @@
         <meta charset="UTF-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Multiplayer Tetris</title>
+        <title>Sign up · Multiplayer Tetris</title>
         <link rel="icon" href="data:;base64,iVBORw0KGgo=" />
-        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-        <script>
-            const handleSubmit = async (e) => {
-                e.preventDefault();
-                const email = document.getElementById('email').value;
-                const username = document.getElementById('username').value;
-                const password = document.getElementById('password').value;
-                try {
-                    const res = await axios.post('/api/signup', { email, username, password });
-                    window.location = '/login';
-                } catch (err) {
-                    console.log(err);
-                }
-            };
-
-            const handleLogin = () => window.location = '/login';
-        </script>
+        <link rel="stylesheet" href="/css/main.css" />
+        <script src="/js/auth.js"></script>
     </head>
     <body>
-        <form onsubmit="handleSubmit(event)">
-            <label for="email">Email:</label>
-            <input type="email" name="email" id="email" required />
-            <label for="username">Username:</label>
-            <input type="text" name="username" id="username" required />
-            <label for="password">Password:</label>
-            <input type="password" name="password" id="password" required />
-            <input type="submit" />
-        </form>
-        <button onclick="handleLogin()">Login</button>
+        <main class="auth-page">
+            <section class="card auth-card">
+                <header>
+                    <span class="brand"
+                        ><span class="brand-blocks"><i></i><i></i><i></i><i></i></span>TETRIS</span
+                    >
+                    <p class="muted">Create an account to start playing</p>
+                </header>
+
+                <div id="formError" class="alert alert-error hidden" role="alert"></div>
+
+                <form id="signupForm" novalidate>
+                    <div class="field">
+                        <label for="email">Email</label>
+                        <input
+                            class="input"
+                            type="email"
+                            id="email"
+                            autocomplete="email"
+                            required
+                        />
+                    </div>
+                    <div class="field">
+                        <label for="username">Username</label>
+                        <input
+                            class="input"
+                            type="text"
+                            id="username"
+                            autocomplete="username"
+                            maxlength="20"
+                            required
+                        />
+                    </div>
+                    <div class="field">
+                        <label for="password">Password</label>
+                        <input
+                            class="input"
+                            type="password"
+                            id="password"
+                            autocomplete="new-password"
+                            minlength="6"
+                            required
+                        />
+                    </div>
+                    <button class="btn btn-primary btn-block" type="submit">Create account</button>
+                </form>
+
+                <p class="auth-switch">Already have an account? <a href="/login">Log in</a></p>
+            </section>
+        </main>
+
+        <script>
+            if (isTokenValid(getToken())) {
+                window.location.replace('/');
+            }
+
+            const form = document.getElementById('signupForm');
+            const formError = document.getElementById('formError');
+
+            const showError = (message) => {
+                formError.textContent = message;
+                formError.classList.remove('hidden');
+            };
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                formError.classList.add('hidden');
+
+                const email = document.getElementById('email').value.trim();
+                const username = document.getElementById('username').value.trim();
+                const password = document.getElementById('password').value;
+                if (!email || !username || !password) {
+                    return showError('Please fill in all the fields.');
+                }
+                if (!/^\S+@\S+\.\S+$/.test(email)) {
+                    return showError('Please enter a valid email address.');
+                }
+                if (password.length < 6) {
+                    return showError('Password must be at least 6 characters.');
+                }
+
+                const submit = form.querySelector('button[type="submit"]');
+                submit.disabled = true;
+                submit.textContent = 'Creating account…';
+                try {
+                    await api('POST', '/api/signup', { email, username, password });
+                    // log the user straight in after signing up
+                    const res = await api('POST', '/api/login', { email, password });
+                    setToken(res.token);
+                    window.location.replace('/');
+                } catch (err) {
+                    showError(err.message);
+                    submit.disabled = false;
+                    submit.textContent = 'Create account';
+                }
+            });
+        </script>
     </body>
 </html>

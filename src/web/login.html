@@ -4,34 +4,85 @@
         <meta charset="UTF-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Multiplayer Tetris</title>
+        <title>Log in · Multiplayer Tetris</title>
         <link rel="icon" href="data:;base64,iVBORw0KGgo=" />
-        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-        <script>
-            const handleSubmit = async (e) => {
-                e.preventDefault();
-                const email = document.getElementById('email').value;
-                const password = document.getElementById('password').value;
-                try {
-                    const res = await axios.post('/api/login', { email, password });
-                    localStorage.setItem('jwt', res.data.token);
-                    window.location = '/';
-                } catch (err) {
-                    console.log(err);
-                }
-            };
-
-            const handleSignup = () => (window.location = '/signup');
-        </script>
+        <link rel="stylesheet" href="/css/main.css" />
+        <script src="/js/auth.js"></script>
     </head>
     <body>
-        <form onsubmit="handleSubmit(event)">
-            <label for="email">Email:</label>
-            <input type="email" name="email" id="email" required />
-            <label for="password">Password:</label>
-            <input type="password" name="password" id="password" required />
-            <input type="submit" />
-        </form>
-        <button onclick="handleSignup()">Signup</button>
+        <main class="auth-page">
+            <section class="card auth-card">
+                <header>
+                    <span class="brand"
+                        ><span class="brand-blocks"><i></i><i></i><i></i><i></i></span>TETRIS</span
+                    >
+                    <p class="muted">Log in to play with your friends</p>
+                </header>
+
+                <div id="formError" class="alert alert-error hidden" role="alert"></div>
+
+                <form id="loginForm" novalidate>
+                    <div class="field">
+                        <label for="email">Email</label>
+                        <input
+                            class="input"
+                            type="email"
+                            id="email"
+                            autocomplete="email"
+                            required
+                        />
+                    </div>
+                    <div class="field">
+                        <label for="password">Password</label>
+                        <input
+                            class="input"
+                            type="password"
+                            id="password"
+                            autocomplete="current-password"
+                            required
+                        />
+                    </div>
+                    <button class="btn btn-primary btn-block" type="submit">Log in</button>
+                </form>
+
+                <p class="auth-switch">New here? <a href="/signup">Create an account</a></p>
+            </section>
+        </main>
+
+        <script>
+            if (isTokenValid(getToken())) {
+                window.location.replace('/');
+            }
+
+            const form = document.getElementById('loginForm');
+            const formError = document.getElementById('formError');
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                formError.classList.add('hidden');
+
+                const email = document.getElementById('email').value.trim();
+                const password = document.getElementById('password').value;
+                if (!email || !password) {
+                    formError.textContent = 'Please enter your email and password.';
+                    formError.classList.remove('hidden');
+                    return;
+                }
+
+                const submit = form.querySelector('button[type="submit"]');
+                submit.disabled = true;
+                submit.textContent = 'Logging in…';
+                try {
+                    const res = await api('POST', '/api/login', { email, password });
+                    setToken(res.token);
+                    window.location.replace('/');
+                } catch (err) {
+                    formError.textContent = err.message;
+                    formError.classList.remove('hidden');
+                    submit.disabled = false;
+                    submit.textContent = 'Log in';
+                }
+            });
+        </script>
     </body>
 </html>

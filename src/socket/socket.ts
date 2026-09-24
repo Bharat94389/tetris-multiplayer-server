@@ -50,13 +50,22 @@ export class Socket {
             this.container[ServicesEnum.playerStatModel]
         );
 
-        await socketHelper.joinGame();
+        // Handle the events of a socket one at a time, in the order they were sent, so the
+        // read-modify-write updates of the cached player stats cannot overwrite each other
+        let queue = Promise.resolve();
+        const enqueue = (handler: () => Promise<void>) => {
+            queue = queue.then(handler).catch((err) => Logger.error(err.message, err.stack));
+        };
 
-        socket.on(GAME_EVENTS.START_GAME, () => socketHelper.startGame());
-        socket.on(GAME_EVENTS.GAME_OVER, () => socketHelper.gameOver());
-        socket.on(GAME_EVENTS.NEXT_PIECE, (data) => socketHelper.nextPiece(data));
-        socket.on(GAME_EVENTS.SCORE_UPDATE, (data) => socketHelper.scoreUpdate(data));
+        enqueue(() => socketHelper.joinGame());
 
-        socket.on('disconnect', () => socketHelper.disconnect());
+        socket.on(GAME_EVENTS.START_GAME, () => enqueue(() => socketHelper.startGame()));
+        socket.on(GAME_EVENTS.GAME_OVER, () => enqueue(() => socketHelper.gameOver()));
+        socket.on(GAME_EVENTS.NEXT_PIECE, (data) => enqueue(() => socketHelper.nextPiece(data)));
+        socket.on(GAME_EVENTS.SCORE_UPDATE, (data) =>
+            enqueue(() => socketHelper.scoreUpdate(data))
+        );
+
+        socket.on('disconnect', () => enqueue(() => socketHelper.disconnect()));
     }
 }

@@ -1,5 +1,5 @@
 import { IGame } from '../database/schema';
-import { GameModel } from '../database/models';
+import { GameModel, PlayerStatModel } from '../database/models';
 import { TRequestInfo } from 'server.types';
 
 export interface IGameController {
@@ -8,14 +8,21 @@ export interface IGameController {
 }
 
 export class GameController implements IGameController {
-    constructor(private gameModel: GameModel) {}
+    constructor(
+        private gameModel: GameModel,
+        private playerStatModel: PlayerStatModel
+    ) {}
 
     async find(requestInfo: TRequestInfo): Promise<IGame[]> {
         const { username } = requestInfo.user;
 
-        // TODO: Update the logic to return all the games user has played
-        // only return the games that the owner has created
-        const query = { owner: username };
+        // return the games the user has created or joined
+        const playerStats = await this.playerStatModel.find(
+            { username },
+            { projection: { gameId: 1 } }
+        );
+        const gameIds = playerStats.map((stat) => stat.gameId);
+        const query = { $or: [{ owner: username }, { gameId: { $in: gameIds } }] };
 
         const games = await this.gameModel.find(query);
         return games;
