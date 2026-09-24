@@ -172,7 +172,7 @@ const requestMorePieces = () => {
     if (game.requestingPieces) {
         return;
     }
-    if (game.sequence.length > game.pieceIndex + TETRIS_PREVIEW_COUNT + 1) {
+    if (game.sequence.length > game.pieceIndex + TETRIS_PIECES_BUFFER) {
         return;
     }
     game.requestingPieces = true;
@@ -637,13 +637,9 @@ const frame = (time) => {
     }
 
     drawBoard(el.board, game.grid, game.piece, { dim: game.state === PLAY_STATE.OVER });
-    // before the first piece spawns the preview starts at the piece about to be played
-    const previewStart = game.piece ? game.pieceIndex + 1 : game.pieceIndex;
-    const preview =
-        game.state === PLAY_STATE.OVER
-            ? []
-            : game.sequence.slice(previewStart, previewStart + TETRIS_PREVIEW_COUNT).split('');
-    drawPreview(el.next, preview);
+    // before the first piece spawns the preview shows the piece about to be played
+    const nextIndex = game.piece ? game.pieceIndex + 1 : game.pieceIndex;
+    drawPreview(el.next, game.state === PLAY_STATE.OVER ? null : game.sequence[nextIndex]);
     requestAnimationFrame(frame);
 };
 

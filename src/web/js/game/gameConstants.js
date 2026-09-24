@@ -100,8 +100,8 @@ const TETRIS_LINE_NAMES = {
     4: 'TETRIS!',
 };
 
-// Number of upcoming pieces shown in the preview
-const TETRIS_PREVIEW_COUNT = 3;
+// Number of upcoming pieces to keep loaded from the server so a piece is never missing
+const TETRIS_PIECES_BUFFER = 4;
 
 // Held key timings (ms): delay before auto repeat, repeat rate, soft drop rate (NES: 1 row / 2 frames)
 const TETRIS_INPUT = {

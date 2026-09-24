@@ -193,44 +193,24 @@ const drawBoard = (canvas, grid, piece, { showGhost = true, dim = false } = {}) 
     );
 };
 
-// Draws the upcoming pieces either stacked (tall canvas) or side by side (wide canvas)
-const drawPreview = (canvas, types) => {
+// Draws the next piece centered in the preview canvas
+const drawPreview = (canvas, type) => {
     const ctx = canvas.getContext('2d');
     const { width, height } = fitCanvas(canvas);
     ctx.clearRect(0, 0, width, height);
+    if (!TETRIS_BLOCKS[type]) {
+        return;
+    }
 
-    // the desktop preview is roughly square, so treat anything near square as a stack
-    const vertical = height >= width * 0.75;
-    // narrow horizontal previews (mobile) only have room for fewer pieces
-    const count = vertical
-        ? TETRIS_PREVIEW_COUNT
-        : Math.max(1, Math.min(TETRIS_PREVIEW_COUNT, Math.floor(width / height)));
-    const slotW = vertical ? width : width / count;
-    const slotH = vertical ? height / count : height;
-    const size = Math.min(slotW / 5, slotH / (vertical ? 3 : 2.4));
-
-    types.slice(0, count).forEach((type, index) => {
-        if (!TETRIS_BLOCKS[type]) {
-            return;
-        }
-        const shape = trimShape(TETRIS_BLOCKS[type]);
-        const offsetX = (vertical ? 0 : index * slotW) + (slotW - shape[0].length * size) / 2;
-        const offsetY = (vertical ? index * slotH : 0) + (slotH - shape.length * size) / 2;
-        // the first upcoming piece is drawn brighter than the rest
-        const alpha = index === 0 ? 1 : 0.55;
-        shape.forEach((row, i) =>
-            row.forEach((filled, j) => {
-                if (filled) {
-                    drawCell(
-                        ctx,
-                        offsetX + j * size,
-                        offsetY + i * size,
-                        size,
-                        TETRIS_COLORS[type],
-                        alpha
-                    );
-                }
-            })
-        );
-    });
+    const shape = trimShape(TETRIS_BLOCKS[type]);
+    const size = Math.min(width / 5, height / 3);
+    const offsetX = (width - shape[0].length * size) / 2;
+    const offsetY = (height - shape.length * size) / 2;
+    shape.forEach((row, i) =>
+        row.forEach((filled, j) => {
+            if (filled) {
+                drawCell(ctx, offsetX + j * size, offsetY + i * size, size, TETRIS_COLORS[type]);
+            }
+        })
+    );
 };
