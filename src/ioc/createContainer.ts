@@ -62,7 +62,8 @@ export const createContainer = () => {
 
     container.register(
         ServicesEnum.gameController,
-        (c: IocContainer) => new GameController(c[ServicesEnum.gameModel])
+        (c: IocContainer) =>
+            new GameController(c[ServicesEnum.gameModel], c[ServicesEnum.playerStatModel])
     );
 
     // socket

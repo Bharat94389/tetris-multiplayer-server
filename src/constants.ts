@@ -1,5 +1,9 @@
 export const GAME_CONSTANTS = {
     GAME_OVER: 'GAME_OVER',
+    ROWS: 20,
+    COLS: 10,
+    // number of pieces added to the sequence at a time
+    PIECES_BATCH_SIZE: 5,
     PIECES: {
         L: 'l',
         S: 's',
@@ -14,6 +18,7 @@ export const GAME_CONSTANTS = {
 export const CACHE = {
     GAME: 'GAME',
     PLAYER: 'PLAYER',
+    SEQUENCE: 'SEQUENCE',
 } as const;
 
 export const GAME_STATUS = {
@@ -36,6 +41,7 @@ export const GAME_EVENTS = {
     PLAYER_JOINED: 'PLAYER_JOINED',
     PLAYER_LEFT: 'PLAYER_LEFT',
     SCORE_UPDATE: 'SCORE_UPDATE',
+    GAME_NOT_FOUND: 'GAME_NOT_FOUND',
 } as const;
 
 export const HTTP_STATUS_CODES = {

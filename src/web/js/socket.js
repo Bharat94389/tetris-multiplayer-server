@@ -1,13 +1,5 @@
-// data setup
-const gameId = window.location.pathname.split('/').splice(-1)[0];
-
-// socket setup
-const socket = io('/', { auth: { token: localStorage.getItem('jwt') }, query: { gameId } });
-socket.on('connect', () => console.log('Connected to server'));
-socket.on('disconnect', () => console.log('Disconnected from server'));
-
+// Loaded last: wires the socket events to the game in game.js
 const EVENTS = {
-    NEW_GAME: 'NEW_GAME',
     START_GAME: 'START_GAME',
     NEXT_PIECE: 'NEXT_PIECE',
     SCORE_UPDATE: 'SCORE_UPDATE',
@@ -15,37 +7,36 @@ const EVENTS = {
     GAME_DATA: 'GAME_DATA',
     PLAYER_JOINED: 'PLAYER_JOINED',
     PLAYER_LEFT: 'PLAYER_LEFT',
+    GAME_NOT_FOUND: 'GAME_NOT_FOUND',
 };
 
-socket.on(EVENTS.GAME_DATA, (data) => {
-    gameData = data.gameData;
-    // Add start button if user is game owner
-    if (gameData.owner === userDetails.username) {
-        document.getElementById('startButton')?.remove();
-        const button = document.createElement('button');
-        button.id = 'startButton';
-        button.innerHTML = 'Start Game';
-        button.addEventListener('click', () => socket.emit(EVENTS.START_GAME));
-        document.getElementById('gameContainer').appendChild(button);
-    } else {
-        document.getElementById('info-box')?.remove();
-        const div = document.createElement('div');
-        div.id = 'info-box';
-        div.innerHTML = 'Waiting for owner to start the game';
-        document.getElementById('gameContainer').appendChild(div);
-    }
-
-    // add players to leaderboard
-    const leaderboard = document.getElementById('leaderboard');
-    leaderboard.innerHTML = '';
-    data.currentPlayers.forEach((player) => setPlayerData(player));
-
-    playerData = data.currentPlayers.find((p) => p.username === userDetails.username);
-
-    // initialize the game
-    init();
+const socket = io('/', {
+    autoConnect: Boolean(userDetails),
+    auth: { token: getToken() },
+    query: { gameId },
 });
 
-socket.on(EVENTS.PLAYER_JOINED, (data) => setPlayerData(data));
+socket.on('connect', () => setConnection(true, 'Connected'));
 
-socket.on(EVENTS.PLAYER_LEFT, (data) => setPlayerData(data));
+socket.on('disconnect', (reason) => {
+    // the server closes the connection itself only when the game does not exist
+    if (reason !== 'io server disconnect') {
+        setConnection(false, 'Reconnecting…');
+    }
+});
+
+socket.on('connect_error', (err) => {
+    if (/authorization/i.test(err.message)) {
+        return logout();
+    }
+    setConnection(false, 'Connection failed');
+});
+
+socket.on(EVENTS.GAME_DATA, onGameData);
+socket.on(EVENTS.START_GAME, onStartGame);
+socket.on(EVENTS.NEXT_PIECE, onNextPieces);
+socket.on(EVENTS.PLAYER_JOINED, onPlayerUpdate);
+socket.on(EVENTS.PLAYER_LEFT, onPlayerUpdate);
+socket.on(EVENTS.SCORE_UPDATE, onPlayerUpdate);
+socket.on(EVENTS.GAME_OVER, onGameOver);
+socket.on(EVENTS.GAME_NOT_FOUND, onGameNotFound);

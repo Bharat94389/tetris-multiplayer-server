@@ -4,34 +4,105 @@
         <meta charset="UTF-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Multiplayer Tetris</title>
-        <script src="/js/auth.js"></script>
+        <title>Game · Multiplayer Tetris</title>
         <link rel="icon" href="data:;base64,iVBORw0KGgo=" />
-        <link rel="stylesheet" href="/css/game.css" />
+        <link rel="stylesheet" href="/css/main.css" />
+        <script src="/js/auth.js" data-require-auth></script>
     </head>
-    <body>
-        <div id="gameWrapper">
-            <div style="display: flex; justify-content: space-around">
-                <div id="gameContainer">
-                    <div id="gridContainer"></div>
-                </div>
-                <div id="detailsContainer">
-                    <div id="tetrisNextPiece"></div>
-                    <div id="tetrisLevel"></div>
-                    <div id="tetrisScore"></div>
-                    <div>
-                        <h3>Leaderboard</h3>
-                        <div id="leaderboard"></div>
-                    </div>
-                </div>
+    <body class="game-page">
+        <header class="topbar">
+            <a href="/" class="brand"
+                ><span class="brand-blocks"><i></i><i></i><i></i><i></i></span>TETRIS
+                <small>Multiplayer</small></a
+            >
+            <div class="topbar-actions">
+                <span class="connection" id="connection"
+                    ><span class="dot" id="connectionDot"></span
+                    ><span id="connectionText">Connecting…</span></span
+                >
+                <a class="btn btn-ghost btn-sm" href="/">Lobby</a>
             </div>
-        </div>
+        </header>
+
+        <main class="game-layout">
+            <aside class="side side-left">
+                <section class="card next-card">
+                    <h2 class="card-title">Next</h2>
+                    <canvas id="nextCanvas"></canvas>
+                </section>
+                <section class="card stats-card">
+                    <div class="stats">
+                        <div>
+                            <span class="stat-label">Score</span>
+                            <span class="stat-value" id="statScore">0</span>
+                        </div>
+                        <div>
+                            <span class="stat-label">Level</span>
+                            <span class="stat-value" id="statLevel">0</span>
+                        </div>
+                        <div>
+                            <span class="stat-label">Lines</span>
+                            <span class="stat-value" id="statLines">0</span>
+                        </div>
+                    </div>
+                </section>
+                <section class="card controls-card">
+                    <h2 class="card-title">Controls</h2>
+                    <dl class="controls-list">
+                        <dt><kbd>←</kbd><kbd>→</kbd></dt>
+                        <dd>Move <span class="alt">(A / D)</span></dd>
+                        <dt><kbd>↓</kbd></dt>
+                        <dd>Soft drop <span class="alt">(S)</span></dd>
+                        <dt><kbd>Space</kbd></dt>
+                        <dd>Hard drop</dd>
+                        <dt><kbd>↑</kbd><kbd>X</kbd></dt>
+                        <dd>Rotate right <span class="alt">(K)</span></dd>
+                        <dt><kbd>Z</kbd></dt>
+                        <dd>Rotate left <span class="alt">(J)</span></dd>
+                    </dl>
+                </section>
+            </aside>
+
+            <section class="board-column">
+                <div class="board-frame" id="boardFrame">
+                    <canvas id="boardCanvas" aria-label="Tetris board"></canvas>
+                    <div class="overlay" id="overlay">
+                        <div class="overlay-content">
+                            <h2 class="overlay-title" id="overlayTitle">Connecting…</h2>
+                            <p class="overlay-text" id="overlayText"></p>
+                            <div class="overlay-actions" id="overlayActions"></div>
+                        </div>
+                    </div>
+                    <div class="toast" id="toast"></div>
+                </div>
+                <div class="touch-controls" id="touchControls">
+                    <button data-action="left" aria-label="Move left">◀</button>
+                    <button data-action="rotateCW" aria-label="Rotate">⟳</button>
+                    <button data-action="down" aria-label="Soft drop">▼</button>
+                    <button data-action="hardDrop" aria-label="Hard drop">⤓</button>
+                    <button data-action="right" aria-label="Move right">▶</button>
+                </div>
+            </section>
+
+            <aside class="side side-right">
+                <section class="card">
+                    <h2 class="card-title">Players</h2>
+                    <ol class="player-list" id="playerList"></ol>
+                </section>
+                <section class="card">
+                    <h2 class="card-title">Invite friends</h2>
+                    <div class="invite">
+                        <input class="input" id="inviteLink" readonly aria-label="Invite link" />
+                        <button class="btn btn-sm" id="copyInvite">Copy</button>
+                    </div>
+                </section>
+            </aside>
+        </main>
 
         <script src="/socket.io/socket.io.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
         <script src="/js/game/gameConstants.js"></script>
         <script src="/js/game/gameHelper.js"></script>
-        <script src="/js/socket.js"></script>
         <script src="/js/game/game.js"></script>
+        <script src="/js/socket.js"></script>
     </body>
 </html>
