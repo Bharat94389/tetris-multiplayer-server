@@ -62,8 +62,11 @@
         </main>
 
         <script>
+            // keep the page to come back to when switching between log in and sign up
+            document.querySelector('.auth-switch a').href = withNext('/login', getNextUrl());
+
             if (isTokenValid(getToken())) {
-                window.location.replace('/');
+                window.location.replace(getNextUrl());
             }
 
             const form = document.getElementById('signupForm');
@@ -99,7 +102,7 @@
                     // log the user straight in after signing up
                     const res = await api('POST', '/api/login', { email, password });
                     setToken(res.token);
-                    window.location.replace('/');
+                    window.location.replace(getNextUrl());
                 } catch (err) {
                     showError(err.message);
                     submit.disabled = false;

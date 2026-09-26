@@ -20,9 +20,20 @@ const isTokenValid = (token) => {
     return Boolean(payload && (!payload.exp || payload.exp * 1000 > Date.now()));
 };
 
+// Page to open after logging in. Only paths on this site are allowed, so a link cannot use the
+// login page to send users to another site
+const getNextUrl = () => {
+    const next = new URLSearchParams(window.location.search).get('next');
+    return next && /^\/(?![/\\])/.test(next) ? next : '/';
+};
+
+// Adds the page to come back to after logging in, the lobby is the default so it is left out
+const withNext = (path, next) => (next === '/' ? path : `${path}?next=${encodeURIComponent(next)}`);
+
 const logout = () => {
     localStorage.removeItem(TOKEN_KEY);
-    window.location.replace('/login');
+    const current = window.location.pathname + window.location.search;
+    window.location.replace(withNext('/login', current));
 };
 
 const api = async (method, url, body) => {
