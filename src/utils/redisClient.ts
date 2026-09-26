@@ -22,7 +22,8 @@ export class RedisClient implements IRedisClient {
     private client: Redis;
 
     constructor(config: typeof redisConfig) {
-        const client = new Redis(config);
+        const { tls, ...options } = config;
+        const client = new Redis({ ...options, tls: tls ? {} : undefined });
 
         client.on('error', (err) => {
             Logger.info('error in redis: ', err);
