@@ -27,3 +27,30 @@ export const isValidBoard = (board: unknown): board is TBoard =>
             row.length === GAME_CONSTANTS.COLS &&
             row.every((cell) => cell === 0 || pieceValues.includes(cell))
     );
+
+const isIntInRange = (n: unknown, min: number, max: number): n is number =>
+    Number.isInteger(n) && (n as number) >= min && (n as number) <= max;
+
+export interface IPiece {
+    type: string;
+    rotation: number;
+    x: number;
+    y: number;
+    pieceNumber: number;
+}
+
+// Checks the falling piece a player streams to the spectators, pieces are at most 4 cells wide
+export const isValidPiece = (piece: unknown): piece is IPiece => {
+    if (!piece || typeof piece !== 'object') {
+        return false;
+    }
+    const { type, rotation, x, y, pieceNumber } = piece as Record<string, unknown>;
+    return (
+        isIntInRange(pieceNumber, 0, Number.MAX_SAFE_INTEGER) &&
+        typeof type === 'string' &&
+        pieceValues.includes(type) &&
+        isIntInRange(rotation, 0, 3) &&
+        isIntInRange(x, -3, GAME_CONSTANTS.COLS) &&
+        isIntInRange(y, -3, GAME_CONSTANTS.ROWS)
+    );
+};

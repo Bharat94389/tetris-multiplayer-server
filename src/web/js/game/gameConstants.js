@@ -112,6 +112,9 @@ const TETRIS_INPUT = {
 
 const TETRIS_START_COUNTDOWN = 3;
 
+// Least time (ms) between the updates of the falling piece sent to the spectators
+const TETRIS_PIECE_UPDATE_MS = 100;
+
 const TETRIS_KEY_ACTIONS = {
     ArrowLeft: 'left',
     ArrowRight: 'right',

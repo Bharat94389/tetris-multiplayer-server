@@ -9,10 +9,14 @@ export interface IRedisClient {
     getGameCacheKey(gameId: string): string;
     getPlayerCacheKey(gameId: string, username: string): string;
     getSequenceCacheKey(gameId: string): string;
+    getSpectatorCacheKey(gameId: string, username: string): string;
+    getBannedCacheKey(gameId: string): string;
     set<T>(key: string, data: T): Promise<void>;
     setStringIfNotExists(key: string, value: string): Promise<void>;
     appendString(key: string, value: string): Promise<void>;
     getString(key: string): Promise<string | null>;
+    addToSet(key: string, value: string): Promise<void>;
+    isSetMember(key: string, value: string): Promise<boolean>;
     getOne<T>(key: string): Promise<T | null>;
     getMany<T>(pattern: string): Promise<T[]>;
     delete(pattern: string): Promise<void>;
@@ -48,6 +52,14 @@ export class RedisClient implements IRedisClient {
         return `${CACHE.SEQUENCE}:${gameId}`;
     }
 
+    getSpectatorCacheKey(gameId: string, username: string) {
+        return `${CACHE.SPECTATOR}:${gameId}:${username}`;
+    }
+
+    getBannedCacheKey(gameId: string) {
+        return `${CACHE.BANNED}:${gameId}`;
+    }
+
     async set<T>(key: string, data: T) {
         await this.client.set(key, JSON.stringify(data));
     }
@@ -62,6 +74,14 @@ export class RedisClient implements IRedisClient {
 
     async getString(key: string): Promise<string | null> {
         return await this.client.get(key);
+    }
+
+    async addToSet(key: string, value: string) {
+        await this.client.sadd(key, value);
+    }
+
+    async isSetMember(key: string, value: string): Promise<boolean> {
+        return (await this.client.sismember(key, value)) === 1;
     }
 
     async getOne<T>(key: string): Promise<T | null> {

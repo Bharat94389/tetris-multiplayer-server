@@ -15,6 +15,8 @@ const createPiece = (type) => {
     return {
         type,
         shape,
+        // number of clockwise turns, sent to the spectators instead of the shape
+        rotation: 0,
         x: Math.floor((TETRIS_DIMENSIONS.COLS - shape[0].length) / 2),
         y: 0,
     };
@@ -25,6 +27,18 @@ const rotateShape = (shape, clockwise) => {
     return shape.map((row, i) =>
         row.map((_, j) => (clockwise ? shape[size - 1 - j][i] : shape[j][size - 1 - i]))
     );
+};
+
+// Rebuilds a piece another player streamed as { type, rotation, x, y }
+const pieceFromUpdate = ({ type, rotation, x, y }) => {
+    if (!TETRIS_BLOCKS[type]) {
+        return null;
+    }
+    let shape = TETRIS_BLOCKS[type];
+    for (let i = 0; i < rotation; i++) {
+        shape = rotateShape(shape, true);
+    }
+    return { type, shape, rotation, x, y };
 };
 
 const collides = (grid, shape, x, y) =>
