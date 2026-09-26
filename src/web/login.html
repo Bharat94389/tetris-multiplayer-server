@@ -50,8 +50,11 @@
         </main>
 
         <script>
+            // keep the page to come back to when switching between log in and sign up
+            document.querySelector('.auth-switch a').href = withNext('/signup', getNextUrl());
+
             if (isTokenValid(getToken())) {
-                window.location.replace('/');
+                window.location.replace(getNextUrl());
             }
 
             const form = document.getElementById('loginForm');
@@ -75,7 +78,7 @@
                 try {
                     const res = await api('POST', '/api/login', { email, password });
                     setToken(res.token);
-                    window.location.replace('/');
+                    window.location.replace(getNextUrl());
                 } catch (err) {
                     formError.textContent = err.message;
                     formError.classList.remove('hidden');

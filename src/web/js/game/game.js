@@ -48,7 +48,8 @@ const game = {
     // the falling piece changed since it was last sent to the spectators
     pieceDirty: false,
     lastPieceSent: 0,
-    lastFrame: 0,
+    // time of the last game update, shared by the frame loop and the background clock
+    lastUpdate: 0,
 };
 
 // username -> player stats as sent by the server
@@ -1110,26 +1111,73 @@ const drawWatched = (watched, time) => {
     }
 };
 
-const frame = (time) => {
-    // clamp so a backgrounded tab does not drop a burst of rows when it comes back
-    const dt = Math.min(time - (game.lastFrame || time), 100);
-    game.lastFrame = time;
+// Runs the game logic, from the frame loop or from the background clock while the tab is hidden
+const updateGame = (now) => {
+    // clamp so a sleeping device does not drop a burst of rows when it wakes up
+    const dt = Math.min(now - (game.lastUpdate || now), 1000);
+    game.lastUpdate = now;
 
     if (game.state === PLAY_STATE.PLAYING && game.piece) {
         updateHeldActions(dt);
         game.dropTimer += dt;
-        const delay = getDelay(game.level);
-        if (game.piece && game.dropTimer >= delay) {
+        // a background tick can cover several rows, locking a piece resets the timer
+        while (game.piece && game.dropTimer >= getDelay(game.level)) {
             // keep the leftover time so the fall speed matches the gravity table
-            game.dropTimer = Math.min(game.dropTimer - delay, delay);
+            game.dropTimer -= getDelay(game.level);
             gravityStep();
         }
-        sendPieceUpdate(time);
+        sendPieceUpdate(now);
     }
+};
+
+// Browsers stop animation frames in hidden tabs and throttle their timers, but not the timers
+// of a worker, so a worker keeps the game running while the player is on another tab
+let backgroundClock = null;
+
+const startBackgroundClock = () => {
+    if (backgroundClock) {
+        return;
+    }
+    const tick = () => updateGame(performance.now());
+    try {
+        const source = 'setInterval(() => postMessage(0), 50);';
+        const url = URL.createObjectURL(new Blob([source], { type: 'text/javascript' }));
+        const worker = new Worker(url);
+        URL.revokeObjectURL(url);
+        worker.onmessage = tick;
+        backgroundClock = { stop: () => worker.terminate() };
+    } catch (err) {
+        // throttled to about once a second, the gravity loop still catches up
+        const interval = setInterval(tick, 50);
+        backgroundClock = { stop: () => clearInterval(interval) };
+    }
+};
+
+const stopBackgroundClock = () => {
+    if (backgroundClock) {
+        backgroundClock.stop();
+        backgroundClock = null;
+    }
+};
+
+document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+        stopBackgroundClock();
+        return;
+    }
+    heldActions.clear();
+    if (game.role === ROLES.PLAYER && !isWatcher()) {
+        startBackgroundClock();
+    }
+});
+
+const frame = () => {
+    const now = performance.now();
+    updateGame(now);
 
     const watched = getWatchedPlayer();
     if (watched) {
-        drawWatched(watched, time);
+        drawWatched(watched, now);
     } else {
         drawBoard(el.board, game.grid, game.piece, { dim: game.state === PLAY_STATE.OVER });
         // before the first piece spawns the preview shows the piece about to be played
