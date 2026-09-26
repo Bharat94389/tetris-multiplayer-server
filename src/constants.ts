@@ -19,6 +19,13 @@ export const CACHE = {
     GAME: 'GAME',
     PLAYER: 'PLAYER',
     SEQUENCE: 'SEQUENCE',
+    SPECTATOR: 'SPECTATOR',
+    BANNED: 'BANNED',
+} as const;
+
+export const ROLES = {
+    PLAYER: 'player',
+    SPECTATOR: 'spectator',
 } as const;
 
 export const GAME_STATUS = {
@@ -42,6 +49,13 @@ export const GAME_EVENTS = {
     PLAYER_LEFT: 'PLAYER_LEFT',
     SCORE_UPDATE: 'SCORE_UPDATE',
     GAME_NOT_FOUND: 'GAME_NOT_FOUND',
+    SPECTATOR_JOINED: 'SPECTATOR_JOINED',
+    SPECTATOR_LEFT: 'SPECTATOR_LEFT',
+    CHANGE_ROLE: 'CHANGE_ROLE',
+    ROLE_CHANGED: 'ROLE_CHANGED',
+    KICK_USER: 'KICK_USER',
+    USER_KICKED: 'USER_KICKED',
+    PIECE_UPDATE: 'PIECE_UPDATE',
 } as const;
 
 export const HTTP_STATUS_CODES = {

@@ -65,6 +65,10 @@ export class Socket {
         socket.on(GAME_EVENTS.SCORE_UPDATE, (data) =>
             enqueue(() => socketHelper.scoreUpdate(data))
         );
+        socket.on(GAME_EVENTS.CHANGE_ROLE, (data) => enqueue(() => socketHelper.changeRole(data)));
+        socket.on(GAME_EVENTS.KICK_USER, (data) => enqueue(() => socketHelper.kickUser(data)));
+        // sent many times a second and changes no state, so it does not wait in the queue
+        socket.on(GAME_EVENTS.PIECE_UPDATE, (data) => socketHelper.pieceUpdate(data));
 
         socket.on('disconnect', () => enqueue(() => socketHelper.disconnect()));
     }

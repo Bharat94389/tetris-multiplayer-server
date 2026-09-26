@@ -8,6 +8,13 @@ const EVENTS = {
     PLAYER_JOINED: 'PLAYER_JOINED',
     PLAYER_LEFT: 'PLAYER_LEFT',
     GAME_NOT_FOUND: 'GAME_NOT_FOUND',
+    SPECTATOR_JOINED: 'SPECTATOR_JOINED',
+    SPECTATOR_LEFT: 'SPECTATOR_LEFT',
+    CHANGE_ROLE: 'CHANGE_ROLE',
+    ROLE_CHANGED: 'ROLE_CHANGED',
+    KICK_USER: 'KICK_USER',
+    USER_KICKED: 'USER_KICKED',
+    PIECE_UPDATE: 'PIECE_UPDATE',
 };
 
 const socket = io('/', {
@@ -19,7 +26,8 @@ const socket = io('/', {
 socket.on('connect', () => setConnection(true, 'Connected'));
 
 socket.on('disconnect', (reason) => {
-    // the server closes the connection itself only when the game does not exist
+    // the server closes the connection itself only when the game does not exist or the user
+    // was removed from it
     if (reason !== 'io server disconnect') {
         setConnection(false, 'Reconnecting…');
     }
@@ -40,3 +48,8 @@ socket.on(EVENTS.PLAYER_LEFT, onPlayerUpdate);
 socket.on(EVENTS.SCORE_UPDATE, onPlayerUpdate);
 socket.on(EVENTS.GAME_OVER, onGameOver);
 socket.on(EVENTS.GAME_NOT_FOUND, onGameNotFound);
+socket.on(EVENTS.SPECTATOR_JOINED, onSpectatorUpdate);
+socket.on(EVENTS.SPECTATOR_LEFT, onSpectatorUpdate);
+socket.on(EVENTS.ROLE_CHANGED, onRoleChanged);
+socket.on(EVENTS.USER_KICKED, onUserKicked);
+socket.on(EVENTS.PIECE_UPDATE, onPieceUpdate);

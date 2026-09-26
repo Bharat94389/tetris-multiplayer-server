@@ -66,6 +66,7 @@
             <section class="board-column">
                 <div class="board-frame" id="boardFrame">
                     <canvas id="boardCanvas" aria-label="Tetris board"></canvas>
+                    <div class="watch-badge hidden" id="watchBadge"></div>
                     <div class="overlay" id="overlay">
                         <div class="overlay-content">
                             <h2 class="overlay-title" id="overlayTitle">Connecting…</h2>
@@ -90,6 +91,10 @@
                     <ol class="player-list" id="playerList"></ol>
                 </section>
                 <section class="card">
+                    <h2 class="card-title">Spectators <span id="spectatorCount"></span></h2>
+                    <ul class="player-list" id="spectatorList"></ul>
+                </section>
+                <section class="card">
                     <h2 class="card-title">Invite friends</h2>
                     <div class="invite">
                         <input class="input" id="inviteLink" readonly aria-label="Invite link" />
@@ -98,6 +103,8 @@
                 </section>
             </aside>
         </main>
+
+        <div class="host-menu hidden" id="hostMenu" role="menu"></div>
 
         <script src="/socket.io/socket.io.js"></script>
         <script src="/js/game/gameConstants.js"></script>
